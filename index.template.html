@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101412">
+  <meta name="description" content="The Real Estate Pickleball Tournament at Corpus Christi Athletic Club. Browse 52 event photographs, watch 10 drone films, and download the collection.">
+  <title>Real Estate Pickleball Tournament — Event Gallery</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="media.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#photos">Skip to photographs</a>
+  <header class="topbar">
+    <a class="wordmark" href="#top" aria-label="Tournament gallery, back to top"><span class="court-mark" aria-hidden="true">P/B</span><span>TOURNAMENT<br>GALLERY</span></a>
+    <nav aria-label="Gallery sections"><a href="#photos">Photos <span>52</span></a><a href="#films">Films <span>10</span></a></nav>
+    <a class="header-download" href="downloads/pickleball-photos.zip" download>Download photos <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main id="top">
+    <section class="event-heading" aria-labelledby="event-title">
+      <div class="event-title"><p class="eyebrow"><span class="live-dot" aria-hidden="true"></span> CORPUS CHRISTI · 09.19.2026</p><h1 id="event-title">REAL ESTATE<br><span>PICKLEBALL</span> TOURNAMENT</h1></div>
+      <div class="event-details"><p class="venue">Corpus Christi Athletic Club</p><p class="event-meta">September 19, 2026<br>52 photographs. 10 drone films.</p><div class="download-links"><a class="button button-primary" href="downloads/pickleball-photos.zip" download>All photos <span>@@PHOTO_ZIP_SIZE@@ ZIP ↓</span></a><a class="button button-secondary" href="@@COMPLETE_ZIP_URL@@">Photos + films <span>@@COMPLETE_ZIP_SIZE@@ ZIP ↓</span></a></div></div>
+    </section>
+
+    <section id="photos" aria-labelledby="photos-heading">
+      <div class="section-heading"><h2 id="photos-heading">THE PHOTO COLLECTION <span>01—52</span></h2><p>Open a photo to view. Download the full-size JPEG.</p></div>
+      <div class="photo-wall">@@PHOTO_CARDS@@</div>
+    </section>
+
+    <section id="films" class="films-section" aria-labelledby="films-heading">
+      <div class="section-heading"><h2 id="films-heading">A DIFFERENT PERSPECTIVE <span>10 FILMS</span></h2><p>Vertical drone films · 1080 × 1920 · up to 60 seconds</p></div>
+      <div class="film-wall">@@FILM_CARDS@@</div>
+      <p class="film-note">These drone films have no recorded sound.</p>
+    </section>
+  </main>
+
+  <footer><a class="footer-title" href="#top">BACK TO THE COURT ↑</a><p>Real Estate Pickleball Tournament<br>Corpus Christi Athletic Club · September 19, 2026</p><a href="downloads/pickleball-photos.zip" download>Download all 52 photos ↓</a></footer>
+
+  <dialog id="lightbox" aria-label="Full-screen photo viewer" aria-describedby="lightbox-caption">
+    <div class="lightbox-top"><span id="lightbox-counter" aria-live="polite">PHOTO 01 / 52</span><button type="button" id="close-lightbox" aria-label="Close photo viewer">Close <span aria-hidden="true">×</span></button></div>
+    <div id="lightbox-stage" class="lightbox-stage"><img id="lightbox-image" alt=""><p class="image-loading" id="image-status" role="status">Loading photo…</p></div>
+    <button type="button" id="previous-photo" class="lightbox-arrow arrow-previous" aria-label="Previous photo">←</button><button type="button" id="next-photo" class="lightbox-arrow arrow-next" aria-label="Next photo">→</button>
+    <div class="lightbox-bottom"><div><p id="lightbox-caption"></p><span id="lightbox-dimensions"></span></div><a id="lightbox-download" class="button button-primary" download>Download JPEG ↓</a></div>
+  </dialog>
+  <noscript><p class="noscript-note">Photo links and downloads work without JavaScript. Enable JavaScript for the full-screen viewer.</p></noscript>
+</body>
+</html>
