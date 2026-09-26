@@ -1,81 +1,79 @@
-/* No framework, tracking, cookies or remote scripts. */
-(() => {
-  'use strict';
-  const photos = window.GALLERY_DATA.photos;
-  const dialog = document.querySelector('#lightbox');
-  const image = document.querySelector('#lightbox-image');
-  const stage = document.querySelector('#lightbox-stage');
-  const status = document.querySelector('#image-status');
-  const counter = document.querySelector('#lightbox-counter');
-  const caption = document.querySelector('#lightbox-caption');
-  const dimensions = document.querySelector('#lightbox-dimensions');
-  const download = document.querySelector('#lightbox-download');
-  const closeButton = document.querySelector('#close-lightbox');
-  let selected = 0;
-  let opener = null;
-  let oldOverflow = '';
-  let touch = null;
-  let lastSwipe = 0;
+import PhotoSwipeLightbox from './vendor/photoswipe-lightbox.esm.min.js';
+import { slideData, zoomOptions } from './gallery-options.mjs';
 
-  function showPhoto(index) {
-    selected = (index + photos.length) % photos.length;
-    const photo = photos[selected];
-    stage.classList.add('is-loading');
-    status.hidden = false;
-    status.textContent = 'Loading photo…';
-    counter.textContent = `PHOTO ${String(selected + 1).padStart(2, '0')} / ${photos.length}`;
-    caption.textContent = photo.title;
-    dimensions.textContent = `${photo.width.toLocaleString()} × ${photo.height.toLocaleString()} px · JPEG · ${(photo.bytes / 1e6).toFixed(1)} MB`;
-    download.href = photo.full;
-    download.download = photo.filename;
-    download.setAttribute('aria-label', `Download photo ${selected + 1}: ${photo.title}`);
-    image.alt = photo.alt;
-    image.src = photo.display || photo.full;
-  }
+const photos = window.GALLERY_DATA.photos;
+const lightbox = new PhotoSwipeLightbox({
+  gallery: '#photo-wall',
+  children: '.photo-open',
+  ...zoomOptions,
+  bgOpacity: 1,
+  zoom: false,
+  showHideAnimationType: 'fade',
+  showAnimationDuration: 150,
+  hideAnimationDuration: 150,
+  paddingFn: viewport => ({
+    top: viewport.x < 760 ? 100 : 85,
+    bottom: viewport.x < 760 ? 130 : 115,
+    left: viewport.x < 760 ? 8 : 64,
+    right: viewport.x < 760 ? 8 : 64
+  }),
+  pswpModule: () => import('./vendor/photoswipe.esm.min.js')
+});
+lightbox.addFilter('itemData', (item, index) => ({ ...item, ...slideData(photos[index]) }));
+let opener = null;
+document.querySelector('#photo-wall').addEventListener('click', event => {
+  opener = event.target.closest('.photo-open') || opener;
+}, true);
+lightbox.on('beforeOpen', () => document.querySelectorAll('video').forEach(video => video.pause()));
+lightbox.on('destroy', () => opener?.focus({ preventScroll: true }));
+lightbox.on('uiRegister', () => {
+  const pswp = lightbox.pswp;
+  const changeZoom = factor => {
+    const slide = pswp.currSlide;
+    if (!slide) return;
+    pswp.zoomTo(Math.max(slide.zoomLevels.fit, Math.min(slide.zoomLevels.max, slide.currZoomLevel * factor)), undefined, 180);
+  };
+  pswp.ui.registerElement({name:'zoom-out',order:8,isButton:true,ariaLabel:'Zoom out',title:'Zoom out',html:'−',onClick:() => changeZoom(1/1.6)});
+  pswp.ui.registerElement({name:'zoom-in',order:9,isButton:true,ariaLabel:'Zoom in',title:'Zoom in',html:'+',onClick:() => changeZoom(1.6)});
+  pswp.ui.registerElement({name:'fit',order:11,isButton:true,ariaLabel:'Fit photo to screen',title:'Fit photo to screen',html:'Fit',onClick:() => {
+    if (pswp.currSlide) pswp.zoomTo(pswp.currSlide.zoomLevels.fit, undefined, 180);
+  }});
+  pswp.ui.registerElement({
+    name:'zoom-hint',appendTo:'root',html:'Pinch or double-tap to zoom · drag to explore',
+    onInit: el => el.setAttribute('aria-hidden','true')
+  });
+  pswp.ui.registerElement({
+    name:'caption-bar',appendTo:'root',
+    onInit: (el, instance) => {
+      const copy = document.createElement('div'); copy.className = 'pswp__caption-copy';
+      const title = document.createElement('strong');
+      const detail = document.createElement('small');
+      const original = document.createElement('a'); original.className = 'pswp__original';
+      original.textContent = 'Open original ↗'; original.target = '_blank'; original.rel = 'noopener';
+      const download = document.createElement('a'); download.className = 'pswp__download'; download.textContent = 'Download JPEG ↓';
+      copy.append(title, detail, original); el.append(copy, download);
+      instance.on('change', () => {
+        const p = photos[instance.currIndex];
+        title.textContent = p.title;
+        detail.textContent = p.width.toLocaleString() + ' × ' + p.height.toLocaleString() + ' px · ' + (p.bytes/1e6).toFixed(1) + ' MB';
+        original.href = p.full; original.setAttribute('aria-label', 'Open original photo ' + (instance.currIndex+1) + ' in a new tab');
+        download.href = p.full; download.download = p.filename;
+        download.setAttribute('aria-label', 'Download photo ' + (instance.currIndex+1) + ': ' + p.title);
+      });
+    }
+  });
+});
+lightbox.on('afterInit', () => lightbox.pswp.element.setAttribute('aria-label', 'Full-screen photo viewer'));
+lightbox.on('openingAnimationEnd', () => lightbox.pswp.element.querySelector('.pswp__button--close')?.focus());
+lightbox.init();
 
-  image.addEventListener('load', () => { stage.classList.remove('is-loading'); status.hidden = true; });
-  image.addEventListener('error', () => { stage.classList.remove('is-loading'); status.hidden = false; status.textContent = 'This photo could not load. Try the download button or move to the next photo.'; });
-  document.querySelectorAll('[data-photo-index]').forEach(link => {
-    link.addEventListener('click', event => {
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || typeof dialog.showModal !== 'function') return;
-      event.preventDefault();
-      opener = link;
-      oldOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      document.querySelectorAll('video').forEach(video => video.pause());
-      showPhoto(Number(link.dataset.photoIndex));
-      dialog.showModal();
-      closeButton.focus();
-    });
+document.querySelectorAll('video').forEach(video => {
+  video.addEventListener('play', () => document.querySelectorAll('video').forEach(other => { if (other !== video) other.pause(); }));
+  video.addEventListener('error', () => {
+    if (video.parentElement.querySelector('.film-error')) return;
+    const message = document.createElement('p');
+    message.className = 'film-error';
+    message.textContent = 'Playback is unavailable. Use Download MP4 below to watch this film.';
+    video.insertAdjacentElement('afterend', message);
   });
-  closeButton.addEventListener('click', () => dialog.close());
-  dialog.addEventListener('close', () => { document.body.style.overflow = oldOverflow; if (opener) opener.focus({preventScroll: true}); });
-  document.querySelector('#previous-photo').addEventListener('click', () => showPhoto(selected - 1));
-  document.querySelector('#next-photo').addEventListener('click', () => showPhoto(selected + 1));
-  dialog.addEventListener('keydown', event => {
-    if (event.key === 'ArrowRight') { event.preventDefault(); showPhoto(selected + 1); }
-    if (event.key === 'ArrowLeft') { event.preventDefault(); showPhoto(selected - 1); }
-    if (event.key === 'Home') { event.preventDefault(); showPhoto(0); }
-    if (event.key === 'End') { event.preventDefault(); showPhoto(photos.length - 1); }
-  });
-  stage.addEventListener('click', event => { if (event.target === stage && Date.now() - lastSwipe > 350) dialog.close(); });
-  stage.addEventListener('touchstart', event => { if (event.touches.length === 1) touch = {x:event.touches[0].clientX,y:event.touches[0].clientY}; else touch = null; }, {passive:true});
-  stage.addEventListener('touchend', event => {
-    if (!touch || !event.changedTouches.length) return;
-    const dx = event.changedTouches[0].clientX - touch.x;
-    const dy = event.changedTouches[0].clientY - touch.y;
-    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) { lastSwipe = Date.now(); showPhoto(selected + (dx < 0 ? 1 : -1)); }
-    touch = null;
-  }, {passive:true});
-
-  document.querySelectorAll('video').forEach(video => {
-    video.addEventListener('play', () => { document.querySelectorAll('video').forEach(other => {if (other !== video) other.pause();}); });
-    video.addEventListener('error', () => {
-      if (video.parentElement.querySelector('.film-error')) return;
-      const message = document.createElement('p');
-      message.className = 'film-error';
-      message.textContent = 'Playback is unavailable. Use Download MP4 below to watch this film.';
-      video.insertAdjacentElement('afterend', message);
-    });
-  });
-})();
+});

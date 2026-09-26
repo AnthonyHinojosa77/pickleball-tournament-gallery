@@ -1,10 +1,10 @@
 # Real Estate Pickleball Tournament gallery
 
-A standalone HTML5/CSS/JavaScript gallery for the September 19, 2026 tournament at Corpus Christi Athletic Club. No framework, server, database, third-party scripts or runtime installation is required.
+A standalone HTML5/CSS/JavaScript gallery for the September 19, 2026 tournament at Corpus Christi Athletic Club. No framework, server, database, remotely loaded code or runtime installation is required. The MIT-licensed PhotoSwipe 5.4.4 viewer is bundled locally.
 
 Production: https://anthonyhinojosa77.github.io/pickleball-tournament-gallery/
 
-The gallery contains 52 full-size finished JPEGs (including five 4K action frames), 10 vertical drone films, lightweight responsive WebP previews, a fullscreen keyboard/touch photo viewer, individual downloads and two ZIP downloads. The drone films have an AAC silence track because the camera footage contained no recorded audio.
+The gallery contains 52 full-size current JPEG exports (including five 4K action frames), 10 vertical drone films, lightweight responsive WebP previews, a fullscreen keyboard/touch photo viewer, individual downloads and two ZIP downloads. The drone films have an AAC silence track because the camera footage contained no recorded audio.
 
 ## Files and hosting
 
@@ -39,9 +39,18 @@ For a local preview, run `python3 -m http.server 8765 --bind 127.0.0.1 --directo
 
 ## Verification
 
-`scripts/validate_gallery.py` checks all local resource references, 52 photo hashes and dimensions, sRGB profiles, responsive previews, all 10 video hashes/formats/durations, poster dimensions, ZIP CRCs and file counts, hosting size limits and JavaScript syntax. `scripts/test_lightbox.cjs` tests navigation, wrapping, swipe, error/loading behavior, download targeting, focus restoration and exclusive video playback using event doubles. These are automated file and interaction-logic checks; they do not substitute for browser visual testing.
+`scripts/validate_gallery.py` checks media hashes, dimensions, color profiles, video formats, archive integrity and hosting limits. For presentation-only changes, `scripts/validate_presentation.py` requires unchanged media and verifies local references, counts, JavaScript syntax and hosting size. `scripts/test_lightbox.cjs` checks responsive sources and PhotoSwipe zoom calculations for all 52 photos at four viewport widths. Browser review separately checks layout, zoom, panning, navigation and original download targets. These checks do not emulate physical iPhone gestures.
 
-The site uses native video controls and a native modal dialog, provides alt text and keyboard controls, respects reduced-motion settings, lazy-loads photo previews, and does not preload video files. CSS layouts adapt at 430, 760, 1100 and 1900 pixels.
+The site uses the supplied tournament artwork with a white, pink, green and yellow palette, native video controls, alt text, keyboard navigation, reduced-motion support and lazy-loaded previews. PhotoSwipe supports pinch, double-tap, drag, keyboard navigation and explicit zoom buttons. The viewer requests the native JPEG when zoom requires more detail; Open original and Download JPEG remain available.
+
+For branding or viewer updates that preserve all media and archives:
+
+```sh
+python3 scripts/render_site.py
+python3 scripts/deploy_presentation.py
+```
+
+This validates and publishes the existing Pages site without rebuilding or uploading the large ZIP archives. The production URL and existing QR codes remain valid.
 
 GitHub Pages serves static public content. Its published site limit is 1 GB, and its soft bandwidth limit is 100 GB per month. High traffic with large video downloads may call for moving the media to object storage.
 

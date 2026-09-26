@@ -5,5 +5,6 @@
   "event": "Real Estate Pickleball Tournament",
   "venue": "Corpus Christi Athletic Club",
   "city": "Corpus Christi, Texas",
-  "date": "September 19, 2026"
+  "date": "September 19, 2026",
+  "ui_version": "brand-zoom-20260926"
 }

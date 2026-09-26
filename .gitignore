@@ -5,3 +5,7 @@ artifacts/
 deployment.json
 validation.json
 *.log
+
+presentation-validation.json
+presentation-deployment.json
+browser-validation.json

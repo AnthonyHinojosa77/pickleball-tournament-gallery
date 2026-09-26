@@ -68,7 +68,7 @@ def main():
     zip_url=f'https://github.com/{cfg["repository"]}/releases/download/{cfg["release_tag"]}/{complete_zip.name}'
     photo_zip_url=f'https://github.com/{cfg["repository"]}/releases/download/{cfg["release_tag"]}/{photo_zip.name}'
     template=(ROOT/'index.template.html').read_text()
-    for token,value in {'@@MEDIA_VERSION@@':version,'@@PHOTO_ZIP_URL@@':photo_zip_url,'@@PHOTO_CARDS@@':'\n'.join(photo_cards),'@@FILM_CARDS@@':'\n'.join(film_cards),'@@PHOTO_ZIP_SIZE@@':f'{photo_zip.stat().st_size/1e6:.0f} MB','@@COMPLETE_ZIP_SIZE@@':f'{complete_zip.stat().st_size/1e6:.0f} MB','@@COMPLETE_ZIP_URL@@':zip_url}.items():template=template.replace(token,value)
+    for token,value in {'@@MEDIA_VERSION@@':version,'@@UI_VERSION@@':cfg.get('ui_version',version),'@@PHOTO_ZIP_URL@@':photo_zip_url,'@@PHOTO_CARDS@@':'\n'.join(photo_cards),'@@FILM_CARDS@@':'\n'.join(film_cards),'@@PHOTO_ZIP_SIZE@@':f'{photo_zip.stat().st_size/1e6:.0f} MB','@@COMPLETE_ZIP_SIZE@@':f'{complete_zip.stat().st_size/1e6:.0f} MB','@@COMPLETE_ZIP_URL@@':zip_url}.items():template=template.replace(token,value)
     assert '@@' not in template;(docs/'index.html').write_text(template)
     data={'event':cfg['event'],'photos':photos,'videos':videos,'photo_zip':photo_zip_url,'complete_zip':zip_url}
     (docs/'media.js').write_text('window.GALLERY_DATA = '+json.dumps(data,ensure_ascii=False,separators=(',',':'))+';\n')
@@ -80,4 +80,7 @@ def main():
     if obsolete_zip.exists():obsolete_zip.unlink()
     dump(artifacts/'build.json',{'photos':len(photos),'videos':len(videos),'published_bytes':sum(p.stat().st_size for p in docs.rglob('*') if p.is_file()),'photos_zip_sha256':sha(photo_zip),'complete_zip_sha256':sha(complete_zip),'complete_zip_bytes':complete_zip.stat().st_size})
     print(f'Built {len(photos)} photos, {len(videos)} films; complete ZIP {complete_zip.stat().st_size/1e6:.1f} MB',flush=True)
-if __name__=='__main__':main()
+if __name__=='__main__':
+    main()
+    from render_site import render
+    render()
