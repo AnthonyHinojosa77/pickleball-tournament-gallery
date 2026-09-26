@@ -30,7 +30,7 @@
     download.download = photo.filename;
     download.setAttribute('aria-label', `Download photo ${selected + 1}: ${photo.title}`);
     image.alt = photo.alt;
-    image.src = photo.full;
+    image.src = photo.display || photo.full;
   }
 
   image.addEventListener('load', () => { stage.classList.remove('is-loading'); status.hidden = true; });

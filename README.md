@@ -9,10 +9,10 @@ The gallery contains 52 full-size finished JPEGs (including five 4K action frame
 ## Files and hosting
 
 - `docs/` is the complete static website served by GitHub Pages from `main`.
-- `docs/downloads/pickleball-photos.zip` contains all 52 full-size gallery JPEGs.
-- The GitHub release `tournament-2026-09-19` hosts `pickleball-complete-gallery.zip`, containing the same 52 JPEGs plus all 10 reels. This avoids GitHub's 100 MiB repository file limit.
+- The release asset `pickleball-photos.zip` contains all 52 finished gallery JPEGs.
+- The GitHub release `tournament-2026-09-19-color-corrected` hosts `pickleball-complete-gallery.zip`, containing the same 52 JPEGs plus all 10 reels. This avoids GitHub's 100 MiB repository file limit.
 - The untouched 4K camera masters and RAW photos remain in the original OneDrive delivery; they are not part of the public gallery or its ZIPs.
-- Full-size downloads preserve the finished deliverables: photos up to 3,600 pixels on the long edge and 3,840 × 2,160 action frames. They are not RAW files.
+- Full-size downloads preserve the finished deliverables: 47 RAW-developed photos at 8,184 × 4,600 pixels and 3,840 × 2,160 action frames. They are not RAW files.
 
 ## Rebuild and deploy
 
@@ -27,7 +27,7 @@ python3 -m venv .venv
 
 The builder reads the media pipeline's `_Pipeline/photos.json`, `action-stills.json` and `reels.json`. It copies the finished assets without changing the source media, creates previews/posters and checks ZIP integrity. This event snapshot expects 52 photos and 10 reels. The scripts and template are editable for future events.
 
-`deploy.py` validates the finished site, creates or updates the configured public repository, uploads the full collection ZIP as a release asset, enables GitHub Pages, waits for publication and verifies the live page and media downloads. It then generates SVG and PNG QR codes beside `platform-posting-copy.txt` in the delivery directory and adds the live gallery URL to that copy. It saves a local `deployment.json` receipt. It never posts captions or messages to social accounts.
+`deploy.py` validates the finished site, creates or updates the configured public repository, uploads both ZIPs as release assets, enables GitHub Pages, waits for publication and verifies the live page and media downloads. It then generates SVG and PNG QR codes beside `platform-posting-copy.txt` in the delivery directory and adds the live gallery URL to that copy. It saves a local `deployment.json` receipt. It never posts captions or messages to social accounts.
 
 If only regenerating the QR code:
 
@@ -46,3 +46,7 @@ The site uses native video controls and a native modal dialog, provides alt text
 GitHub Pages serves static public content. Its published site limit is 1 GB, and its soft bandwidth limit is 100 GB per month. High traffic with large video downloads may call for moving the media to object storage.
 
 References: [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits), [GitHub releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases), [python-qrcode](https://pypi.org/project/qrcode/).
+
+## September 26 color correction
+
+The earlier flat grade has been replaced. The RAW development now explicitly uses the embedded DNG color profile, camera tone curve and HueSatMap, scene-specific exposure and automatic chroma noise reduction. Full-resolution JPEGs and smaller color-managed WebP previews are separate. Versioned media paths prevent the old grade from being reused from browser cache. Highlights clipped in the original sensor capture and capture softness cannot be reconstructed by conventional processing.

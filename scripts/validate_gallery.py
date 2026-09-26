@@ -51,8 +51,8 @@ def main():
         with Image.open(path) as im:
             im.load(); assert im.size == (p['width'],p['height']) and im.mode == 'RGB'
             assert im.info.get('icc_profile'), f'Missing sRGB profile: {path}'
-        for size in [480,960]:
-            with Image.open(DOCS/f'media/previews/photo-{p["id"]:02d}-{size}.webp') as im:
+        for size in [480,960,2048]:
+            with Image.open(DOCS/Path(p['preview']).with_name(f'photo-{p["id"]:02d}-{size}.webp')) as im:
                 im.load(); assert im.width <= size and im.height <= size*2
     for v in manifest['videos']:
         path = DOCS/v['file']; assert sha(path) == v['sha256']
@@ -62,7 +62,7 @@ def main():
         assert (video['width'],video['height']) == (1080,1920) and video['codec_name']=='h264'
         assert audio['codec_name']=='aac' and float(data['format']['duration']) <= 60.1
         with Image.open(DOCS/v['poster']) as im: im.load(); assert im.size == (540,960)
-    for path, count, digest in [(DOCS/manifest['photo_zip'],52,build['photos_zip_sha256']), (ROOT/'artifacts/pickleball-complete-gallery.zip',62,build['complete_zip_sha256'])]:
+    for path, count, digest in [(ROOT/'artifacts/pickleball-photos.zip',52,build['photos_zip_sha256']), (ROOT/'artifacts/pickleball-complete-gallery.zip',62,build['complete_zip_sha256'])]:
         assert sha(path) == digest
         with zipfile.ZipFile(path) as z:
             assert z.testzip() is None and len(z.namelist())==count

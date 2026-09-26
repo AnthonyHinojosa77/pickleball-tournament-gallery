@@ -19,6 +19,7 @@ const links = [0,1,2].map(i=>Object.assign(new Element(),{dataset:{photoIndex:St
 const videos = [new Element(),new Element()];
 const body = {style:{overflow:'auto'}};
 const photos = [0,1,2].map(i=>({title:'Photo '+i,alt:'Alt '+i,width:3600,height:2400,bytes:1e6,full:'photo-'+i+'.jpg',filename:'photo-'+i+'.jpg'}));
+photos[1].display='preview-1.webp';
 const document = {body,querySelector:s=>elements[s],querySelectorAll:s=>s==='video'?videos:links};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../docs/app.js'),'utf8'),{document,window:{GALLERY_DATA:{photos}},Date});
 const dialog=elements['#lightbox'],image=elements['#lightbox-image'];
@@ -30,13 +31,14 @@ assert.equal(image.src,'photo-0.jpg'); assert.equal(elements['#close-lightbox'].
 assert.ok(videos.every(v=>v.paused));
 elements['#previous-photo'].fire('click'); assert.equal(image.src,'photo-2.jpg');
 elements['#next-photo'].fire('click'); assert.equal(image.src,'photo-0.jpg');
-dialog.fire('keydown',{key:'ArrowRight'}); assert.equal(image.src,'photo-1.jpg');
+dialog.fire('keydown',{key:'ArrowRight'}); assert.equal(image.src,'preview-1.webp');
 dialog.fire('keydown',{key:'End'}); assert.equal(image.src,'photo-2.jpg');
 dialog.fire('keydown',{key:'Home'}); assert.equal(image.src,'photo-0.jpg');
 const stage=elements['#lightbox-stage'];
 stage.fire('touchstart',{touches:[{clientX:250,clientY:50}]});
-stage.fire('touchend',{changedTouches:[{clientX:50,clientY:60}]}); assert.equal(image.src,'photo-1.jpg');
+stage.fire('touchend',{changedTouches:[{clientX:50,clientY:60}]}); assert.equal(image.src,'preview-1.webp');
 assert.equal(elements['#lightbox-download'].download,'photo-1.jpg');
+assert.equal(elements['#lightbox-download'].href,'photo-1.jpg');
 image.fire('load'); assert.equal(elements['#image-status'].hidden,true);
 image.fire('error'); assert.equal(elements['#image-status'].hidden,false);
 elements['#close-lightbox'].fire('click'); assert.equal(dialog.open,false);
