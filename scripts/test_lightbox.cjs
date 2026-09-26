@@ -16,7 +16,13 @@ const path = require('node:path');
       const candidates=data.srcset.split(', ').map(s=>{const [url,w]=s.split(' ');return {url,width:Number(w.slice(0,-1))};});
       assert.equal(candidates.at(-1).url,photo.full);
       assert.equal(candidates.at(-1).width,photo.width);
-      for (const c of candidates) assert.ok(fs.existsSync(path.join(__dirname,'../docs',c.url)));
+      for (const c of candidates) {
+        const file=c.url.startsWith('https://')
+          ? path.join(__dirname,'../artifacts/photos',photo.filename)
+          : path.join(__dirname,'../docs',c.url);
+        if (c.url.startsWith('https://')) assert.equal(c.url,photo.full);
+        assert.ok(fs.existsSync(file),'Missing responsive image: '+c.url);
+      }
       for (let i=1;i<candidates.length;i++) assert.ok(candidates[i].width>candidates[i-1].width,'Responsive sources must increase, including portrait previews');
       const levels=new ZoomLevel(zoomOptions,data,0);
       levels.update(photo.width,photo.height,{x:width-16,y:614});

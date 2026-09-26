@@ -47,7 +47,8 @@ def main():
     assert len([a for t,a in doc.tags if 'data-photo-index' in a]) == 52
     assert len(manifest['photos']) == 52 and len(manifest['videos']) == 10
     for p in manifest['photos']:
-        path = DOCS/p['full']; assert sha(path) == p['sha256']
+        path = ROOT/'artifacts/photos'/p['filename'] if urlparse(p['full']).scheme else DOCS/p['full']
+        assert sha(path) == p['sha256']
         with Image.open(path) as im:
             im.load(); assert im.size == (p['width'],p['height']) and im.mode == 'RGB'
             assert im.info.get('icc_profile'), f'Missing sRGB profile: {path}'

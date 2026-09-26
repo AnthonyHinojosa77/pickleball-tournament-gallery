@@ -32,6 +32,13 @@ def sha(path):
 def get(url, method='GET', headers=None):
     return urlopen(Request(url,method=method,headers={'User-Agent':'PickleballGalleryVerifier/1.0',**(headers or {})}),timeout=60)
 
+def release_for_tag(repo, tag):
+    # GitHub's by-tag endpoint excludes drafts, even for the authenticated owner.
+    release=api(f'repos/{repo}/releases/tags/{tag}',optional=True)
+    if release is None:
+        release=next((r for r in api(f'repos/{repo}/releases?per_page=100') if r['tag_name']==tag),None)
+    return release
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--qr-output',type=Path,default=ROOT.parent);args=ap.parse_args()
     cfg=json.loads((ROOT/'config.json').read_text());repo=cfg['repository'];tag=cfg['release_tag']
@@ -47,7 +54,7 @@ def main():
     branch=run('git','branch','--show-current',capture=True).stdout.strip();assert branch=='main',f'Expected main, got {branch}'
     run('git','add','--','docs','scripts','index.template.html','config.json','README.md','requirements.txt','.gitignore')
     if run('git','diff','--cached','--quiet',check=False).returncode:
-        run('git','commit','-m','Apply selective photo finishing and add tournament emblem')
+        run('git','commit','-m','Redevelop all 47 RAW photographs and rebuild full-resolution delivery')
     existing=api(f'repos/{repo}',optional=True)
     if existing is None:
         run('gh','repo','create',repo,'--public','--description','Real Estate Pickleball Tournament — photo and drone film gallery')
@@ -57,29 +64,41 @@ def main():
     current=run('git','remote','get-url','origin',capture=True,check=False)
     if current.returncode:run('git','remote','add','origin',remote)
     else:assert current.stdout.strip()==remote,'Unexpected origin; no changes made to remote'
-    print('Uploading gallery assets…',flush=True)
-    run('git','push','--set-upstream','origin','main')
     commit=run('git','rev-parse','HEAD',capture=True).stdout.strip()
-    digest=sha(archive);release=api(f'repos/{repo}/releases/tags/{tag}',optional=True)
+    digest=sha(archive);release=release_for_tag(repo,tag)
     photo_archive=ROOT/'artifacts/pickleball-photos.zip'
     archives=[archive,photo_archive]
+    upload_files=archives+sorted((ROOT/'artifacts/photos').glob('*.jpg')) if cfg.get('photo_asset_base') else archives
+    if (ROOT/'artifacts/RAW_SOURCE_AUDIT.csv').exists():upload_files.append(ROOT/'artifacts/RAW_SOURCE_AUDIT.csv')
     print('Publishing corrected collection ZIPs…',flush=True)
     notes=ROOT/'artifacts/release-notes.txt'
-    notes.write_text('Finished with selective subject lift, tonal contrast and color refinement over the embedded-profile RAW development: 47 native-resolution photographs plus five 4K extracted stills. The complete collection also includes 10 vertical drone films.\n\nCamera originals remain in OneDrive.\n\n'+''.join(f'{p.name} SHA-256: {sha(p)}\n' for p in archives))
+    notes.write_text('Fresh development of 47 original DNGs through lossless TIFF intermediates, tuned capture deconvolution, the approved color finish and restrained noise reduction. The 47 native-resolution camera JPEGs use quality 96 and 4:4:4 color sampling. Five separately identified 4K video stills and ten drone films are retained.\n\nCamera originals remain untouched in OneDrive.\n\n'+''.join(f'{p.name} SHA-256: {sha(p)}\n' for p in upload_files))
     if release is None:
         run('gh','release','create',tag,*[str(p) for p in archives],'--repo',repo,'--target','main','--title','Tournament — refined photos and drone films','--notes-file',str(notes))
     else:
-        for path in archives:
+        for path in upload_files:
             existing_asset=next((a for a in release['assets'] if a['name']==path.name),None)
             if existing_asset is None or existing_asset.get('digest')!='sha256:'+sha(path):
                 run('gh','release','upload',tag,str(path),'--repo',repo,'--clobber')
-        run('gh','release','edit',tag,'--repo',repo,'--notes-file',str(notes))
-    release=api(f'repos/{repo}/releases/tags/{tag}')
-    for path in archives:
+        run('gh','release','edit',tag,'--repo',repo,'--title','Tournament — full RAW photo development and drone films','--notes-file',str(notes))
+    # Initial releases already received the ZIPs; publish full-size photo assets too.
+    release=release_for_tag(repo,tag)
+    for path in upload_files:
+        current_asset=next((a for a in release['assets'] if a['name']==path.name),None)
+        if current_asset is None:
+            run('gh','release','upload',tag,str(path),'--repo',repo)
+    release=release_for_tag(repo,tag)
+    for path in upload_files:
         current_asset=next(a for a in release['assets'] if a['name']==path.name)
         assert current_asset['size']==path.stat().st_size and current_asset['state']=='uploaded'
         if current_asset.get('digest'):assert current_asset['digest']=='sha256:'+sha(path)
     asset=next(a for a in release['assets'] if a['name']==archive.name)
+    if release.get('draft'):
+        run('gh','release','edit',tag,'--repo',repo,'--draft=false')
+        release=release_for_tag(repo,tag)
+    # Only switch the live page after all of its downloads are available.
+    print('Uploading gallery assets…',flush=True)
+    run('git','push','--set-upstream','origin','main')
     pages=api(f'repos/{repo}/pages',optional=True)
     source={'branch':'main','path':'/docs'}
     if pages is None:pages=api(f'repos/{repo}/pages','POST',{'build_type':'legacy','source':source})
@@ -108,12 +127,12 @@ def main():
     # Confirm every full-size image and film is present anonymously at production.
     for item in manifest['photos']+manifest['videos']:
         rel=item.get('full') or item['file']
-        with get(url+rel,method='HEAD') as response:
+        with get(rel if rel.startswith('https://') else url+rel,method='HEAD') as response:
             assert int(response.headers['Content-Length'])==item['bytes'],rel
     # Verify the exact bytes of every corrected photograph, not only one sample.
     def verify_photo(photo):
         h=hashlib.sha256()
-        with get(url+photo['full']) as response:
+        with get(photo['full'] if photo['full'].startswith('https://') else url+photo['full']) as response:
             for block in iter(lambda:response.read(2**20),b''):h.update(block)
         assert h.hexdigest()==photo['sha256'],photo['filename']
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:

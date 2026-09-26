@@ -10,7 +10,7 @@ The gallery contains 52 full-size current JPEG exports (including five 4K action
 
 - `docs/` is the complete static website served by GitHub Pages from `main`.
 - The release asset `pickleball-photos.zip` contains all 52 finished gallery JPEGs.
-- The GitHub release `tournament-2026-09-19-color-corrected` hosts `pickleball-complete-gallery.zip`, containing the same 52 JPEGs plus all 10 reels. This avoids GitHub's 100 MiB repository file limit.
+- The GitHub release `tournament-2026-09-19-raw-detail` hosts both ZIPs and all native JPEG downloads. `pickleball-complete-gallery.zip` contains the same 52 JPEGs plus all 10 reels. Keeping native JPEGs in the release keeps the Pages site below its size limit.
 - The untouched 4K camera masters and RAW photos remain in the original OneDrive delivery; they are not part of the public gallery or its ZIPs.
 - Full-size downloads preserve the finished deliverables: 47 RAW-developed photos at 8,184 × 4,600 pixels and 3,840 × 2,160 action frames. They are not RAW files.
 
@@ -65,3 +65,6 @@ The earlier flat grade has been replaced. The RAW development now explicitly use
 The September 26 finishing pass adds defined subject-region lift for the group, DJ and host photographs, stronger luminance contrast, restrained adaptive contrast, controlled ceiling highlights, slight green-cast reduction and output sharpening. It is a deterministic conventional edit; it does not generate detail or change the photographed scene. The existing profile-aware full-resolution JPEGs were used as the preserved baseline for this pass. Future RAW development applies the same finishing function once after its embedded-profile conversion. Native dimensions are retained.
 
 The attached house-and-paddle emblem appears in the header and footer. Versioned `selective-20260926` media and a separate `tournament-2026-09-19-selective-finish` release ensure previews, originals and ZIP downloads all use this pass. Prior media remains in Git history and the previous release. The review includes side-by-side proofs; image hashes only verify delivery, not artistic quality.
+
+
+RAW detail revision (26 September 2026): camera stills are freshly redeveloped from 47 DNGs with source/export checksums, lossless TIFF intermediates and tuned capture sharpening. Camera JPEGs use native dimensions, sRGB, quality 96 and 4:4:4 sampling. Five video freeze-frames are identified separately. `photo_asset_base` stores native JPEGs in the versioned GitHub release; the builder stages upload links under `artifacts/photos`, and deployment publishes verified assets before changing the live page. `RAW_SOURCE_AUDIT.csv` accompanies the release.
