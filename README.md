@@ -59,3 +59,9 @@ References: [GitHub Pages limits](https://docs.github.com/en/pages/getting-start
 ## September 26 color correction
 
 The earlier flat grade has been replaced. The RAW development now explicitly uses the embedded DNG color profile, camera tone curve and HueSatMap, scene-specific exposure and automatic chroma noise reduction. Full-resolution JPEGs and smaller color-managed WebP previews are separate. Versioned media paths prevent the old grade from being reused from browser cache. Highlights clipped in the original sensor capture and capture softness cannot be reconstructed by conventional processing.
+
+## Selective finishing and tournament emblem
+
+The September 26 finishing pass adds defined subject-region lift for the group, DJ and host photographs, stronger luminance contrast, restrained adaptive contrast, controlled ceiling highlights, slight green-cast reduction and output sharpening. It is a deterministic conventional edit; it does not generate detail or change the photographed scene. The existing profile-aware full-resolution JPEGs were used as the preserved baseline for this pass. Future RAW development applies the same finishing function once after its embedded-profile conversion. Native dimensions are retained.
+
+The attached house-and-paddle emblem appears in the header and footer. Versioned `selective-20260926` media and a separate `tournament-2026-09-19-selective-finish` release ensure previews, originals and ZIP downloads all use this pass. Prior media remains in Git history and the previous release. The review includes side-by-side proofs; image hashes only verify delivery, not artistic quality.

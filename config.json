@@ -1,10 +1,10 @@
 {
   "repository": "AnthonyHinojosa77/pickleball-tournament-gallery",
-  "release_tag": "tournament-2026-09-19-color-corrected",
-  "media_version": "color-20260926",
+  "release_tag": "tournament-2026-09-19-selective-finish",
+  "media_version": "selective-20260926",
   "event": "Real Estate Pickleball Tournament",
   "venue": "Corpus Christi Athletic Club",
   "city": "Corpus Christi, Texas",
   "date": "September 19, 2026",
-  "ui_version": "brand-zoom-20260926"
+  "ui_version": "emblem-selective-20260926"
 }

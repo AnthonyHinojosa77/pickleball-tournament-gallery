@@ -47,7 +47,7 @@ def main():
     branch=run('git','branch','--show-current',capture=True).stdout.strip();assert branch=='main',f'Expected main, got {branch}'
     run('git','add','--','docs','scripts','index.template.html','config.json','README.md','requirements.txt','.gitignore')
     if run('git','diff','--cached','--quiet',check=False).returncode:
-        run('git','commit','-m','Replace flat photo grade with profile-aware native-resolution exports')
+        run('git','commit','-m','Apply selective photo finishing and add tournament emblem')
     existing=api(f'repos/{repo}',optional=True)
     if existing is None:
         run('gh','repo','create',repo,'--public','--description','Real Estate Pickleball Tournament — photo and drone film gallery')
@@ -65,9 +65,9 @@ def main():
     archives=[archive,photo_archive]
     print('Publishing corrected collection ZIPs…',flush=True)
     notes=ROOT/'artifacts/release-notes.txt'
-    notes.write_text('Reprocessed from RAW using embedded camera color profiles: 47 native-resolution photographs plus five 4K action stills. The complete collection also includes 10 vertical drone films.\n\nCamera originals remain in OneDrive.\n\n'+''.join(f'{p.name} SHA-256: {sha(p)}\n' for p in archives))
+    notes.write_text('Finished with selective subject lift, tonal contrast and color refinement over the embedded-profile RAW development: 47 native-resolution photographs plus five 4K extracted stills. The complete collection also includes 10 vertical drone films.\n\nCamera originals remain in OneDrive.\n\n'+''.join(f'{p.name} SHA-256: {sha(p)}\n' for p in archives))
     if release is None:
-        run('gh','release','create',tag,*[str(p) for p in archives],'--repo',repo,'--target','main','--title','Tournament — corrected photos and drone films','--notes-file',str(notes))
+        run('gh','release','create',tag,*[str(p) for p in archives],'--repo',repo,'--target','main','--title','Tournament — refined photos and drone films','--notes-file',str(notes))
     else:
         for path in archives:
             existing_asset=next((a for a in release['assets'] if a['name']==path.name),None)
