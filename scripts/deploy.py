@@ -30,7 +30,15 @@ def sha(path):
     return h.hexdigest()
 
 def get(url, method='GET', headers=None):
-    return urlopen(Request(url,method=method,headers={'User-Agent':'PickleballGalleryVerifier/1.0',**(headers or {})}),timeout=60)
+    for attempt in range(5):
+        try:
+            return urlopen(Request(url,method=method,headers={'User-Agent':'PickleballGalleryVerifier/1.0',**(headers or {})}),timeout=60)
+        except HTTPError as error:
+            if error.code not in (429,500,502,503,504) or attempt==4:raise
+        except (URLError,TimeoutError,ConnectionError):
+            if attempt==4:raise
+        print(f'Retrying transient {method} failure: {url.rsplit("/",1)[-1]}',flush=True)
+        time.sleep(2**attempt)
 
 def release_for_tag(repo, tag):
     # GitHub's by-tag endpoint excludes drafts, even for the authenticated owner.
