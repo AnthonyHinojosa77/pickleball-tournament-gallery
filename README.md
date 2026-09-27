@@ -4,7 +4,7 @@ A standalone HTML5/CSS/JavaScript gallery for the September 19, 2026 tournament 
 
 Production: https://anthonyhinojosa77.github.io/pickleball-tournament-gallery/
 
-The gallery contains the September 19 shoot: 41 RAW-developed JPEGs, a color-graded recap film and all 7 drone clips, trimmed and graded. It also has lightweight responsive WebP previews, a fullscreen keyboard/touch photo viewer, individual downloads and two ZIP downloads. Films play on the page as 1080p H.264; the recap also downloads in 4K. The camera recorded no audio.
+The gallery contains the September 19 shoot: 41 RAW-developed JPEGs, a color-graded recap film and all 7 drone clips, trimmed and graded. It also has lightweight responsive WebP previews, a fullscreen keyboard/touch photo viewer, individual downloads and two ZIP downloads. Films play on the page as 1080p H.264; the recap also downloads in 4K. The camera recorded no audio; the recap carries “Enter the Party” by Kevin MacLeod (incompetech.com), licensed under CC BY 4.0 and credited on the page and in the file metadata.
 
 ## Files and hosting
 

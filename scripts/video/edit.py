@@ -5,7 +5,8 @@ Outputs in OUT_DIR:
   clip-NN.mp4       each camera clip trimmed of dead moments, graded, 1080p (fits GitHub's 100 MB file limit)
   recap-4k.mp4      ~2 minute recap film, 3840x2160
   recap-1080.mp4    the same film for playback on the page
-Usage: edit.py SOURCE_DIR OUT_DIR [clips|recap|all]
+The recap carries the licensed music track from edl.json (credited in the file metadata and on the page).
+Usage: edit.py SOURCE_DIR OUT_DIR [clips|recap|music|all]
 """
 import json, subprocess, sys
 from pathlib import Path
@@ -91,6 +92,17 @@ def web_encode(seconds, ceiling_mb=88):
             '-profile:v', 'high', '-level', '4.1', '-pix_fmt', 'yuv420p']
 
 
+def add_music(film, music):
+    """Lay the licensed track under a finished film: trimmed to length, fades, web loudness, video copied untouched."""
+    seconds = duration(film); fade = music['fade_out']; tmp = film.with_suffix('.music.mp4')
+    audio = (f"atrim=0:{seconds:.3f},afade=t=in:st=0:d=0.5,afade=t=out:st={seconds - fade:.3f}:d={fade},"
+             f"loudnorm=I={music['loudness_lufs']}:TP=-1.5:LRA=11,aresample=48000")
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(film), '-i', str(HERE / music['file']), '-map', '0:v:0', '-map', '1:a:0',
+                    '-c:v', 'copy', '-af', audio, '-c:a', 'aac', '-b:a', '192k', '-shortest', '-metadata', f"comment=Music: {music['credit']}",
+                    '-movflags', '+faststart', str(tmp)], check=True)
+    tmp.replace(film)
+
+
 def main():
     src, out = Path(sys.argv[1]), Path(sys.argv[2]); what = sys.argv[3] if len(sys.argv) > 3 else 'all'
     out.mkdir(parents=True, exist_ok=True)
@@ -114,7 +126,11 @@ def main():
             card(end, size, [('Corpus Christi Athletic Club', 0.045), ('September 19, 2026', 0.035)])
             seconds = sum(b - a for _, a, b in segs) + 8
             total = render(segs, out / label, size, encode or web_encode(seconds), cards=(title, end))
-            print(f'{label}: {total:.1f}s', flush=True)
+            add_music(out / label, edl['music'])
+            print(f'{label}: {total:.1f}s with music', flush=True)
+    if what == 'music':  # add or replace the soundtrack on already-rendered recaps
+        for label in ('recap-1080.mp4', 'recap-4k.mp4'):
+            add_music(out / label, edl['music']); print(f'{label}: music added', flush=True)
 
 
 if __name__ == '__main__':
