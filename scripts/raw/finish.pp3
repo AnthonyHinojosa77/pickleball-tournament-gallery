@@ -5,7 +5,7 @@ Version=351
 [Local Contrast]
 Enabled=true
 Radius=80
-Amount=0.28
+Amount=0.32
 Darkness=1
 Lightness=1
 
@@ -37,7 +37,7 @@ DeconvIterations=20
 Enabled=true
 Enhance=false
 Median=false
-Luma=6
+Luma=12
 Ldetail=60
 Chroma=15
 Method=Lab
@@ -57,7 +57,7 @@ LCurve=0;
 CCCurve=0;
 
 [Exposure]
-Contrast=10
+Contrast=22
 Compensation=0.3
 
 [Shadows & Highlights]

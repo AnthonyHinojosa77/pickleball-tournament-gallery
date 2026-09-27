@@ -13,7 +13,7 @@ rgb = cv2.imread(tif, cv2.IMREAD_UNCHANGED)[:, :, ::-1].astype(np.float32) / 655
 h, w = rgb.shape[:2]
 small = cv2.resize(rgb, (round(w * .75), round(h * .75)), interpolation=cv2.INTER_AREA)
 im = Image.fromarray(np.clip(small * 255 + .5, 0, 255).astype(np.uint8))
-im = im.filter(ImageFilter.UnsharpMask(radius=0.8, percent=55, threshold=2))
+im = im.filter(ImageFilter.UnsharpMask(radius=1.0, percent=95, threshold=3))
 icc = ImageCms.ImageCmsProfile(ImageCms.createProfile('sRGB')).tobytes()
 im.save(dst, quality=95, subsampling=0, icc_profile=icc, optimize=True)
 subprocess.run(['exiftool', '-q', '-q', '-overwrite_original', '-TagsFromFile', dng, '-EXIF:all', '-GPS:all=', '-Orientation=',
