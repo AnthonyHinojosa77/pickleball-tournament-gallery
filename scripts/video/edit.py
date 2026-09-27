@@ -18,7 +18,7 @@ FADE = 0.5  # seconds for dissolves and fades
 # Same intent as the photo finish: firmer blacks, open mids, rolled-off highlights, gentle vibrance, local contrast.
 GRADE = ("curves=master='0/0 0.06/0.035 0.25/0.215 0.5/0.5 0.75/0.79 0.93/0.945 1/0.985',"
          "vibrance=intensity=0.18,eq=saturation=1.06,unsharp=13:11:0.30:5:5:0.0,unsharp=5:5:{fine}")
-PAPER, INK = (255, 253, 248), (23, 55, 43)
+INK = (23, 55, 43)
 
 
 def duration(path):
@@ -36,8 +36,8 @@ def is_vertical(path):
 def card(path, size, lines):
     """Branded title/end card: tournament logo on the site's paper colour, optional lines of text."""
     w, h = size
-    im = Image.new('RGB', size, PAPER)
     logo = Image.open(ROOT / 'docs/brand/tournament-logo.jpg').convert('RGB')
+    im = Image.new('RGB', size, logo.getpixel((4, 4)))  # match the logo's own background so no box shows
     scale = (h * (0.62 if lines else 0.78)) / logo.height
     logo = logo.resize((round(logo.width * scale), round(logo.height * scale)), Image.LANCZOS)
     top = round(h * (0.08 if lines else 0.11))
