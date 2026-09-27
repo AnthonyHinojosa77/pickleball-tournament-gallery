@@ -1,0 +1,15 @@
+name: Stage gallery release
+# Uploads the finished media to a DRAFT release. Nothing becomes public until the draft is published.
+on:
+  push:
+    paths: ['release-staging/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  stage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "placeholder"
