@@ -4,14 +4,14 @@ A standalone HTML5/CSS/JavaScript gallery for the September 19, 2026 tournament 
 
 Production: https://anthonyhinojosa77.github.io/pickleball-tournament-gallery/
 
-The gallery contains every photo and video shot on September 19: 48 RAW-developed JPEGs and 7 full-length drone films. It also has lightweight responsive WebP previews, a fullscreen keyboard/touch photo viewer, individual downloads and two ZIP downloads. Films play on the page as 1080p H.264 and download as the untouched 4K camera files; the camera recorded no audio.
+The gallery contains every photo and video shot on September 19: 48 RAW-developed JPEGs, a color-graded recap film and all 7 drone clips, trimmed and graded. It also has lightweight responsive WebP previews, a fullscreen keyboard/touch photo viewer, individual downloads and two ZIP downloads. Films play on the page as 1080p H.264; the recap also downloads in 4K. The camera recorded no audio.
 
 ## Files and hosting
 
 - `docs/` is the complete static website served by GitHub Pages from `main`.
 - The release asset `pickleball-photos.zip` contains all 48 finished gallery JPEGs.
-- The GitHub release `tournament-2026-09-19-redeveloped` hosts both ZIPs, all full-size JPEGs and the 4K film originals (`pickleball-film-NN-4k.mp4`, lossless remuxes of the camera files with telemetry and location metadata removed). `pickleball-complete-gallery.zip` contains the 48 JPEGs plus the 7 films in 1080p. Keeping full-size media in the release keeps the Pages site below its size limit.
-- The untouched 4K camera masters and RAW photos remain in the original OneDrive delivery; they are not part of the public gallery or its ZIPs.
+- The GitHub release `tournament-2026-09-19-redeveloped` hosts both ZIPs, all full-size JPEGs and the 4K recap (`pickleball-film-01-4k.mp4`). `pickleball-complete-gallery.zip` contains the 48 JPEGs plus the recap and the 7 clips in 1080p. Keeping full-size media in the release keeps the Pages site below its size limit.
+- The untouched 4K camera masters and RAW photos remain in the original Google Drive upload; they are not part of the public gallery or its ZIPs.
 - Full-size photo downloads are the finished deliverables: 48 RAW-developed photos at 6,138 × 3,450 pixels. They are not RAW files.
 
 ## Rebuild and deploy
@@ -73,8 +73,8 @@ RAW detail revision (26 September 2026): camera stills are freshly redeveloped f
 
 The September 26 exports smeared faces and fabric at full zoom (heavy noise reduction and halo sharpening). All 48 DNGs from the day were redeveloped from scratch with `scripts/raw/develop.sh`: RawTherapee 5.10 with AMaZE demosaicing, capture deconvolution, light noise reduction, the embedded DNG camera profile, gentle local contrast, dehaze, shadow lift and skin-protected vibrance (`scripts/raw/finish.pp3`). `scripts/raw/finalize.py` then area-downscales the 16-bit result to 75% (6,138 × 3,450), applies output sharpening and writes quality-95, 4:4:4 sRGB JPEGs with camera EXIF (GPS removed). The drone's 50 MP quad-Bayer sensor does not resolve 8,192 px of real detail, so the 75% size looks crisp when zoomed.
 
-The gallery now holds only what was shot: the five video freeze-frames were removed, the previously omitted photo `DJI_20260919113628_0098_D` was added, and the ten cropped vertical 60-second reels were replaced by the seven complete films in their original framing. Photos and films are numbered in shooting order, with the group photo first. `config.json` records the expected counts, which the builder and validator enforce.
+The gallery now holds only what was shot: the five video freeze-frames were removed, the previously omitted photo `DJI_20260919113628_0098_D` was added, and the ten cropped vertical 60-second reels were replaced by a recap film plus all seven clips in their original framing. `scripts/video/edit.py` cuts and grades them from the second-by-second edit decisions in `scripts/video/edl.json` (dead moments such as empty-wall pans, whip pans and the landing removed; same grade intent as the photos). Photos and films are numbered in shooting order, with the group photo first. `config.json` records the expected counts, which the builder and validator enforce.
 
 ### Publishing without the GitHub CLI
 
-Cloud sessions that cannot manage releases publish through GitHub Actions instead. `python3 scripts/stage_release.py prepare <drive-ids.txt>` copies the full-size JPEGs into `release-staging/` and records the checksum of every release asset; pushing it runs `.github/workflows/stage-release.yml`, which rebuilds the ZIPs, remuxes the 4K films from their shared Drive originals, rejects any checksum mismatch and uploads everything to a draft release. Merging the gallery update into `main` runs `publish-release.yml`, which publishes that draft as the site goes live. Remove `release-staging/` before merging.
+Cloud sessions that cannot manage releases publish through GitHub Actions instead. `python3 scripts/stage_release.py prepare` copies the full-size JPEGs into `release-staging/`, splits the 4K recap into parts under 100 MB and records the checksum of every release asset. Pushing it runs `.github/workflows/stage-release.yml`, which reassembles the files, rebuilds the ZIPs, rejects any checksum mismatch and uploads everything to a draft release. Merging the gallery update into `main` runs `publish-release.yml`, which publishes that draft as the site goes live. Remove `release-staging/` before merging, and squash-merge so the staged copies stay out of `main`'s history.

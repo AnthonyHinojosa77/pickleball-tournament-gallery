@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """Stage the gallery's large downloads as a DRAFT GitHub release from GitHub Actions.
 
-`prepare` (on the build machine) copies the finished full-size JPEGs into release-staging/ and records the
-expected SHA-256 and size of every release asset. `stage` (on the Actions runner) rebuilds the ZIPs, remuxes
-the 4K camera films from their shared Google Drive originals, refuses any asset that does not match the
+`prepare` (on the build machine) copies the finished full-size JPEGs into release-staging/, splits large films
+into parts under GitHub's 100 MB file limit and records the expected SHA-256 and size of every release asset.
+`stage` (on the Actions runner) rebuilds the ZIPs and films, refuses any asset that does not match the
 recorded checksum, and uploads everything to a draft release. Publishing the draft is a separate step.
 """
-import hashlib, json, shutil, subprocess, sys, urllib.request
+import hashlib, json, shutil, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STAGE = ROOT / 'release-staging'
+PART = 95 * 2**20  # stay under GitHub's 100 MB per-file limit
 sys.path.insert(0, str(ROOT / 'scripts'))
 from build_gallery import make_zip  # same reproducible ZIP writer as the build
 
@@ -22,23 +23,16 @@ def sha(path):
     return h.hexdigest()
 
 
-def remux(src, dst):
-    # Lossless: copy the camera's HEVC stream, drop telemetry/location tracks and metadata.
-    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(src), '-map', '0:v:0', '-c', 'copy', '-tag:v', 'hvc1',
-                    '-map_metadata', '-1', '-movflags', '+faststart', str(dst)], check=True)
-
-
 def zip_items(manifest, photo_dir):
     photos = [(photo_dir / p['filename'], f'Photos/{p["filename"]}') for p in manifest['photos']]
     films = [(ROOT / 'docs' / v['file'], f'Films/{Path(v["file"]).name}') for v in manifest['videos']]
     return photos, photos + films
 
 
-def prepare(drive_ids_file):
+def prepare():
     cfg = json.loads((ROOT / 'config.json').read_text())
     manifest = json.loads((ROOT / 'docs/media-manifest.json').read_text())
     build = json.loads((ROOT / 'artifacts/build.json').read_text())
-    drive = dict(line.split()[::-1] for line in Path(drive_ids_file).read_text().split('\n') if line.strip())
     if STAGE.exists(): shutil.rmtree(STAGE)
     (STAGE / 'photos').mkdir(parents=True)
     assets = []
@@ -46,14 +40,19 @@ def prepare(drive_ids_file):
         src = ROOT / 'artifacts/photos' / p['filename']; dst = STAGE / 'photos' / p['filename']
         shutil.copyfile(src, dst); assert sha(dst) == p['sha256']
         assets.append({'name': p['filename'], 'sha256': p['sha256'], 'bytes': dst.stat().st_size, 'from': 'staged'})
+    (STAGE / 'films').mkdir()
     for v in manifest['videos']:
-        assets.append({'name': Path(v['download']).name, 'sha256': v['download_sha256'], 'bytes': v['download_bytes'],
-                       'from': 'drive', 'drive_id': drive[v['source']]})
+        if not v['download'].startswith('https://'): continue  # served from the page itself
+        name = Path(v['download']).name; parts = []
+        with open(ROOT / 'artifacts/films' / name, 'rb') as f:
+            for n, block in enumerate(iter(lambda: f.read(PART), b'')):
+                part = STAGE / 'films' / f'{name}.part{n:02d}'; part.write_bytes(block); parts.append(part.name)
+        assets.append({'name': name, 'sha256': v['download_sha256'], 'bytes': v['download_bytes'], 'from': 'parts', 'parts': parts})
     for name, key in [('pickleball-photos.zip', 'photos_zip'), ('pickleball-complete-gallery.zip', 'complete_zip')]:
         assets.append({'name': name, 'sha256': build[f'{key}_sha256'], 'bytes': build[f'{key}_bytes'], 'from': 'zip'})
-    notes = (f'All {len(manifest["photos"])} photos from September 19, freshly developed from the camera RAW files '
-             f'(6,138 × 3,450 JPEG), and all {len(manifest["videos"])} drone films as untouched 4K camera originals. '
-             'The complete ZIP includes the films in 1080p.\n')
+    notes = (f'All {len(manifest["photos"])} photos from September 19, developed from the camera RAW files '
+             '(6,138 × 3,450 JPEG), and the color-graded 4K tournament recap film. '
+             'The complete ZIP adds the recap and every trimmed, color-graded drone clip in HD.\n')
     (STAGE / 'assets.json').write_text(json.dumps({'tag': cfg['release_tag'], 'repository': cfg['repository'],
         'title': 'Tournament — client-ready photos and drone films', 'notes': notes, 'assets': assets}, indent=1) + '\n')
     print(f'Staged {len(manifest["photos"])} photos; {len(assets)} release assets recorded')
@@ -86,10 +85,9 @@ def stage():
         elif asset['from'] == 'zip':
             path = work / name; make_zip(path, photo_zip if name == 'pickleball-photos.zip' else complete_zip)
         else:
-            original = work / 'original.mp4'; path = work / name
-            url = f'https://drive.usercontent.google.com/download?id={asset["drive_id"]}&export=download&confirm=t'
-            subprocess.run(['curl', '-sSL', '--fail', '--retry', '4', '-o', str(original), url], check=True)
-            remux(original, path); original.unlink()
+            path = work / name
+            with open(path, 'wb') as out:
+                for part in asset['parts']: out.write((STAGE / 'films' / part).read_bytes())
         actual = sha(path)
         assert actual == asset['sha256'] and path.stat().st_size == asset['bytes'], f'{name}: checksum mismatch {actual}'
         gh('release', 'upload', tag, str(path), '--repo', repo, '--clobber')
@@ -103,4 +101,4 @@ def stage():
 
 
 if __name__ == '__main__':
-    prepare(sys.argv[2]) if sys.argv[1] == 'prepare' else stage()
+    prepare() if sys.argv[1] == 'prepare' else stage()

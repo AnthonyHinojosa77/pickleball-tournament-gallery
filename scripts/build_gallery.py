@@ -69,24 +69,26 @@ def main():
                     preview=im.copy();preview.thumbnail((size,size if size==2048 else size*2));preview.save(preview_path,'WEBP',quality=88 if size==2048 else 82,method=5)
         label='On the court' if 't' in r else title(r['source']);alt=f'{label} at the Real Estate Pickleball Tournament, Corpus Christi Athletic Club. Photo {i}.'
         item={'id':i,'filename':name,'title':label,'alt':alt,'width':w,'height':h,'bytes':dest.stat().st_size,'full':f'{photo_base}/{name}' if photo_base else f'{photo_dir}/{name}','preview':f'{preview_dir}/photo-{i:02d}-960.webp','display':f'{preview_dir}/photo-{i:02d}-2048.webp','sha256':sha(dest),'source_type':'video freeze-frame' if 't' in r else 'camera RAW DNG','source_sha256':r.get('source_sha256')};photos.append(item);photo_items.append((dest,f'Photos/{name}'))
-    # Films: an HD web version plays on the page; the untouched 4K camera file is the release download.
+    # Films play on the page in HD; a film with a separate `download` (the 4K recap) is served from the release.
     reels=read(base/'_Pipeline/reels.json');reels.sort(key=lambda r:Path(r['source']).name)
     assert len(reels)==cfg['expected_videos'],f"Expected {cfg['expected_videos']} films, found {len(reels)}"
     if all('gallery_id' in r for r in reels):reels.sort(key=lambda r:r['gallery_id'])
     (artifacts/'films').mkdir(exist_ok=True);videos=[];video_items=[]
     for old in (docs/'media/reels').glob('pickleball-film-*.mp4'):old.unlink()
     for old in (docs/'media/posters').glob('film-*.jpg'):old.unlink()
+    for old in (artifacts/'films').glob('*'):old.unlink()
     for i,r in enumerate(reels,1):
         src=Path(r['output']);name=f'pickleball-film-{i:02d}.mp4';dest=docs/'media/reels'/name;copy(src,dest)
-        original=artifacts/'films'/f'pickleball-film-{i:02d}-4k.mp4'
-        if original.exists() or original.is_symlink():original.unlink()
-        original.symlink_to(Path(r['download']).resolve())
         probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=width,height:format=duration','-of','json',str(dest)]))
         w,h=probe['streams'][0]['width'],probe['streams'][0]['height'];duration=float(probe['format']['duration'])
         poster=docs/'media/posters'/f'film-{i:02d}.jpg'
-        subprocess.run(['ffmpeg','-v','error','-y','-ss','3','-i',str(dest),'-frames:v','1','-vf','scale=960:-2' if w>h else 'scale=-2:960','-q:v','3','-update','1',str(poster)],check=True)
-        label='Courtside fly-through' if '_0104_' in r['source'] else 'Tournament from above'
-        item={'id':i,'title':label,'file':f'media/reels/{name}','poster':f'media/posters/{poster.name}','width':w,'height':h,'duration':duration,'bytes':dest.stat().st_size,'sha256':sha(dest),'download':f'{photo_base}/{original.name}','download_bytes':original.stat().st_size,'download_sha256':sha(original),'source':Path(r['source']).name};videos.append(item);video_items.append((dest,f'Films/{name}'))
+        subprocess.run(['ffmpeg','-v','error','-y','-ss',str(r.get('poster_at',3)),'-i',str(dest),'-frames:v','1','-vf','scale=960:-2' if w>h else 'scale=-2:960','-q:v','3','-update','1',str(poster)],check=True)
+        if r.get('download'):
+            original=artifacts/'films'/f'pickleball-film-{i:02d}-4k.mp4';original.symlink_to(Path(r['download']).resolve())
+            download,download_bytes,download_sha,quality=f'{photo_base}/{original.name}',original.stat().st_size,sha(original),'4K'
+        else:
+            download,download_bytes,download_sha,quality=f'media/reels/{name}',dest.stat().st_size,sha(dest),'HD'
+        item={'id':i,'title':r.get('title','Tournament from above'),'file':f'media/reels/{name}','poster':f'media/posters/{poster.name}','width':w,'height':h,'duration':duration,'bytes':dest.stat().st_size,'sha256':sha(dest),'download':download,'download_bytes':download_bytes,'download_sha256':download_sha,'download_quality':quality,'source':r['source']};videos.append(item);video_items.append((dest,f'Films/{name}'))
     photo_zip=artifacts/'pickleball-photos.zip';complete_zip=artifacts/'pickleball-complete-gallery.zip'
     print('Creating and CRC-checking ZIP archives…',flush=True);make_zip(photo_zip,photo_items);make_zip(complete_zip,photo_items+video_items)
     zip_url=f'https://github.com/{cfg["repository"]}/releases/download/{cfg["release_tag"]}/{complete_zip.name}'

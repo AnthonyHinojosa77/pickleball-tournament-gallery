@@ -62,10 +62,13 @@ def main():
         video = next(s for s in data['streams'] if s['codec_type']=='video')
         assert (video['width'],video['height']) == (v['width'],v['height']) and {v['width'],v['height']} == {1920,1080}
         assert video['codec_name']=='h264' and video['pix_fmt']=='yuv420p'
-        original = ROOT/'artifacts/films'/Path(v['download']).name
-        assert sha(original) == v['download_sha256'] and original.stat().st_size < 2*2**30, 'GitHub release asset limit'
-        full = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(original)]))
-        assert abs(float(full['format']['duration'])-float(data['format']['duration'])) < 0.2, 'Web film must be full length'
+        if urlparse(v['download']).scheme:
+            original = ROOT/'artifacts/films'/Path(v['download']).name
+            assert sha(original) == v['download_sha256'] and original.stat().st_size < 2*2**30, 'GitHub release asset limit'
+            full = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(original)]))
+            assert abs(float(full['format']['duration'])-float(data['format']['duration'])) < 0.2, 'Download must match the page film'
+        else:
+            assert v['download'] == v['file'] and v['download_sha256'] == v['sha256']
         with Image.open(DOCS/v['poster']) as im: im.load(); assert (im.width>im.height) == (v['width']>v['height'])
     for path, count, digest in [(ROOT/'artifacts/pickleball-photos.zip',photos_n,build['photos_zip_sha256']), (ROOT/'artifacts/pickleball-complete-gallery.zip',photos_n+films_n,build['complete_zip_sha256'])]:
         assert sha(path) == digest
