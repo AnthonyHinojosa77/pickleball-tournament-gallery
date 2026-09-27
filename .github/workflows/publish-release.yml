@@ -1,0 +1,22 @@
+name: Publish gallery release
+# When the gallery update reaches main, publish its staged draft release so the site's download links work.
+on:
+  push:
+    branches: [main]
+    paths: ['docs/media-manifest.json']
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish the draft release named in config.json
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(python3 -c "import json;print(json.load(open('config.json'))['release_tag'])")
+          if [ "$(gh release view "$tag" --json isDraft -q .isDraft)" = "true" ]; then
+            gh release edit "$tag" --draft=false --target "$GITHUB_SHA" --latest
+          fi
+          gh release view "$tag" --json isDraft,assets -q '"published: \(.isDraft|not), assets: \(.assets|length)"'

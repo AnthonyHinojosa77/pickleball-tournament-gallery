@@ -7,5 +7,7 @@
   "city": "Corpus Christi, Texas",
   "date": "September 19, 2026",
   "ui_version": "redeveloped-20260927",
-  "photo_asset_base": "https://github.com/AnthonyHinojosa77/pickleball-tournament-gallery/releases/download/tournament-2026-09-19-redeveloped"
+  "photo_asset_base": "https://github.com/AnthonyHinojosa77/pickleball-tournament-gallery/releases/download/tournament-2026-09-19-redeveloped",
+  "expected_photos": 48,
+  "expected_videos": 7
 }

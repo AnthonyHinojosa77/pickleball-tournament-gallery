@@ -23,8 +23,9 @@ def validate():
                 p=(DOCS/unquote(u.path)).resolve();assert p.is_relative_to(DOCS) and p.is_file(),value;references.append(value)
             if u.fragment:assert u.fragment in doc.ids,value
         if tag=='img':assert 'alt' in a
-    assert len([a for t,a in doc.tags if 'data-photo-index' in a])==52
-    assert len([a for t,a in doc.tags if t=='video'])==10
+    manifest=json.loads((ROOT/'docs/media-manifest.json').read_text())
+    assert len([a for t,a in doc.tags if 'data-photo-index' in a])==len(manifest['photos'])
+    assert len([a for t,a in doc.tags if t=='video'])==len(manifest['videos'])
     assert any(t=='script' and a.get('type')=='module' and a['src'].startswith('app.js?') for t,a in doc.tags)
     for p in ['app.js','gallery-options.mjs','vendor/photoswipe-lightbox.esm.min.js','vendor/photoswipe.esm.min.js']:
         subprocess.run(['node','--check',str(DOCS/p)],check=True)
@@ -32,7 +33,7 @@ def validate():
     files=[p for p in DOCS.rglob('*') if p.is_file()]
     size=sum(p.stat().st_size for p in files);assert size<1_000_000_000
     assert all(p.stat().st_size<100*2**20 for p in files)
-    result={'passed':True,'scope':'presentation update; media unchanged from previously verified commit','local_references':len(references),'site_bytes':size,'zoom_dimensions_tested':'52 photographs at 320, 390, 430 and 1440 CSS pixel widths','physical_iphone_test':False}
+    result={'passed':True,'scope':'presentation update; media unchanged from previously verified commit','local_references':len(references),'site_bytes':size,'zoom_dimensions_tested':f"{len(manifest['photos'])} photographs at 320, 390, 430 and 1440 CSS pixel widths",'physical_iphone_test':False}
     (ROOT/'presentation-validation.json').write_text(json.dumps(result,indent=2))
     return result
 if __name__=='__main__':print(json.dumps(validate(),indent=2))

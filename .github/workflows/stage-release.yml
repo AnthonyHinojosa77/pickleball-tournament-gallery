@@ -1,15 +1,22 @@
 name: Stage gallery release
-# Uploads the finished media to a DRAFT release. Nothing becomes public until the draft is published.
+# Uploads the finished media to a DRAFT release. Nothing becomes public until publish-release runs.
 on:
   push:
-    paths: ['release-staging/**']
-  workflow_dispatch:
+    paths: ['release-staging/assets.json']
 permissions:
   contents: write
+concurrency: stage-release
 jobs:
   stage:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
-      - run: echo "placeholder"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: pip install -q -r requirements.txt
+      - run: python3 scripts/stage_release.py stage
+        env:
+          GH_TOKEN: ${{ github.token }}

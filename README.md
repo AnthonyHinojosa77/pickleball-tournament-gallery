@@ -4,15 +4,15 @@ A standalone HTML5/CSS/JavaScript gallery for the September 19, 2026 tournament 
 
 Production: https://anthonyhinojosa77.github.io/pickleball-tournament-gallery/
 
-The gallery contains 52 full-size current JPEG exports (including five 4K action frames), 10 vertical drone films, lightweight responsive WebP previews, a fullscreen keyboard/touch photo viewer, individual downloads and two ZIP downloads. The drone films have an AAC silence track because the camera footage contained no recorded audio.
+The gallery contains every photo and video shot on September 19: 48 RAW-developed JPEGs and 7 full-length drone films. It also has lightweight responsive WebP previews, a fullscreen keyboard/touch photo viewer, individual downloads and two ZIP downloads. Films play on the page as 1080p H.264 and download as the untouched 4K camera files; the camera recorded no audio.
 
 ## Files and hosting
 
 - `docs/` is the complete static website served by GitHub Pages from `main`.
-- The release asset `pickleball-photos.zip` contains all 52 finished gallery JPEGs.
-- The GitHub release `tournament-2026-09-19-redeveloped` hosts both ZIPs and all native JPEG downloads. `pickleball-complete-gallery.zip` contains the same 52 JPEGs plus all 10 reels. Keeping native JPEGs in the release keeps the Pages site below its size limit.
+- The release asset `pickleball-photos.zip` contains all 48 finished gallery JPEGs.
+- The GitHub release `tournament-2026-09-19-redeveloped` hosts both ZIPs, all full-size JPEGs and the 4K film originals (`pickleball-film-NN-4k.mp4`, lossless remuxes of the camera files with telemetry and location metadata removed). `pickleball-complete-gallery.zip` contains the 48 JPEGs plus the 7 films in 1080p. Keeping full-size media in the release keeps the Pages site below its size limit.
 - The untouched 4K camera masters and RAW photos remain in the original OneDrive delivery; they are not part of the public gallery or its ZIPs.
-- Full-size downloads are the finished deliverables: 47 RAW-developed photos at 6,138 × 3,450 pixels and 3,840 × 2,160 action frames. They are not RAW files.
+- Full-size photo downloads are the finished deliverables: 48 RAW-developed photos at 6,138 × 3,450 pixels. They are not RAW files.
 
 ## Rebuild and deploy
 
@@ -25,7 +25,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/deploy.py
 ```
 
-The builder reads the media pipeline's `_Pipeline/photos.json`, `action-stills.json` and `reels.json`. It copies the finished assets without changing the source media, creates previews/posters and checks ZIP integrity. This event snapshot expects 52 photos and 10 reels. The scripts and template are editable for future events.
+The builder reads the media pipeline's `_Pipeline/photos.json`, optional `action-stills.json` and `reels.json` (each film record gives the web `output` and the 4K `download`). It copies the finished assets without changing the source media, creates previews/posters and checks ZIP integrity. The expected photo and film counts come from `config.json`. The scripts and template are editable for future events.
 
 `deploy.py` validates the finished site, creates or updates the configured public repository, uploads both ZIPs as release assets, enables GitHub Pages, waits for publication and verifies the live page and media downloads. It then generates SVG and PNG QR codes beside `platform-posting-copy.txt` in the delivery directory and adds the live gallery URL to that copy. It saves a local `deployment.json` receipt. It never posts captions or messages to social accounts.
 
@@ -39,7 +39,7 @@ For a local preview, run `python3 -m http.server 8765 --bind 127.0.0.1 --directo
 
 ## Verification
 
-`scripts/validate_gallery.py` checks media hashes, dimensions, color profiles, video formats, archive integrity and hosting limits. For presentation-only changes, `scripts/validate_presentation.py` requires unchanged media and verifies local references, counts, JavaScript syntax and hosting size. `scripts/test_lightbox.cjs` checks responsive sources and PhotoSwipe zoom calculations for all 52 photos at four viewport widths. Browser review separately checks layout, zoom, panning, navigation and original download targets. These checks do not emulate physical iPhone gestures.
+`scripts/validate_gallery.py` checks media hashes, dimensions, color profiles, video formats, archive integrity and hosting limits. For presentation-only changes, `scripts/validate_presentation.py` requires unchanged media and verifies local references, counts, JavaScript syntax and hosting size. `scripts/test_lightbox.cjs` checks responsive sources and PhotoSwipe zoom calculations for every photo at four viewport widths. Browser review separately checks layout, zoom, panning, navigation and original download targets. These checks do not emulate physical iPhone gestures.
 
 The site uses the supplied tournament artwork with a white, pink, green and yellow palette, native video controls, alt text, keyboard navigation, reduced-motion support and lazy-loaded previews. PhotoSwipe supports pinch, double-tap, drag, keyboard navigation and explicit zoom buttons. The viewer requests the native JPEG when zoom requires more detail; Open original and Download JPEG remain available.
 
@@ -71,6 +71,10 @@ RAW detail revision (26 September 2026): camera stills are freshly redeveloped f
 
 ## September 27 redevelopment
 
-The September 26 exports were upscaled-looking at full zoom: heavy noise reduction and halo sharpening smeared faces and fabric. All 47 DNGs (matched to the gallery by source SHA-256) were redeveloped from scratch with `scripts/raw/develop.sh`: RawTherapee 5.10 with AMaZE demosaicing, capture deconvolution, light luminance/chroma noise reduction, the embedded DNG camera profile, gentle local contrast, dehaze, shadow lift and skin-protected vibrance (`scripts/raw/finish.pp3`). `scripts/raw/finalize.py` then area-downscales the 16-bit result to 75% (6,138 × 3,450), applies light output sharpening and writes quality-95, 4:4:4 sRGB JPEGs with camera EXIF (GPS removed).
+The September 26 exports smeared faces and fabric at full zoom (heavy noise reduction and halo sharpening). All 48 DNGs from the day were redeveloped from scratch with `scripts/raw/develop.sh`: RawTherapee 5.10 with AMaZE demosaicing, capture deconvolution, light noise reduction, the embedded DNG camera profile, gentle local contrast, dehaze, shadow lift and skin-protected vibrance (`scripts/raw/finish.pp3`). `scripts/raw/finalize.py` then area-downscales the 16-bit result to 75% (6,138 × 3,450), applies output sharpening and writes quality-95, 4:4:4 sRGB JPEGs with camera EXIF (GPS removed). The drone's 50 MP quad-Bayer sensor does not resolve 8,192 px of real detail, so the 75% size looks crisp when zoomed.
 
-The drone's 50 MP quad-Bayer sensor does not resolve 8,192 px of real detail, so the 75% size looks crisp when zoomed instead of soft. Photo numbering, captions, the five 4K action frames and the ten films are unchanged. To rebuild, point `build_gallery.py --delivery` at a folder whose `_Pipeline` records carry `gallery_id` values.
+The gallery now holds only what was shot: the five video freeze-frames were removed, the previously omitted photo `DJI_20260919113628_0098_D` was added, and the ten cropped vertical 60-second reels were replaced by the seven complete films in their original framing. Photos and films are numbered in shooting order, with the group photo first. `config.json` records the expected counts, which the builder and validator enforce.
+
+### Publishing without the GitHub CLI
+
+Cloud sessions that cannot manage releases publish through GitHub Actions instead. `python3 scripts/stage_release.py prepare <drive-ids.txt>` copies the full-size JPEGs into `release-staging/` and records the checksum of every release asset; pushing it runs `.github/workflows/stage-release.yml`, which rebuilds the ZIPs, remuxes the 4K films from their shared Drive originals, rejects any checksum mismatch and uploads everything to a draft release. Merging the gallery update into `main` runs `publish-release.yml`, which publishes that draft as the site goes live. Remove `release-staging/` before merging.
