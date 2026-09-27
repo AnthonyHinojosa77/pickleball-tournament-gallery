@@ -45,6 +45,8 @@ def main():
     assert len(records)==52,'Expected 47 corrected photos plus five action stills'
     # Lead with the group photo, then mix orientations; keep stable numbering.
     records.sort(key=lambda r:(0 if '_0086_' in r['source'] else 1,Path(r['source']).name,r.get('t',-1)))
+    # Redevelopments carry the published numbering so photo URLs and captions stay stable.
+    if all('gallery_id' in r for r in records):records.sort(key=lambda r:r['gallery_id'])
     photos=[];photo_cards=[];photo_items=[]
     for i,r in enumerate(records,1):
         src=Path(r['output']);name=f'pickleball-photo-{i:02d}.jpg';dest=(artifacts/'photos'/name) if photo_base else (docs/photo_dir/name)
@@ -64,7 +66,8 @@ def main():
         label='On the court' if 't' in r else title(r['source']);alt=f'{label} at the Real Estate Pickleball Tournament, Corpus Christi Athletic Club. Photo {i}.'
         item={'id':i,'filename':name,'title':label,'alt':alt,'width':w,'height':h,'bytes':dest.stat().st_size,'full':f'{photo_base}/{name}' if photo_base else f'{photo_dir}/{name}','preview':f'{preview_dir}/photo-{i:02d}-960.webp','display':f'{preview_dir}/photo-{i:02d}-2048.webp','sha256':sha(dest),'source_type':'video freeze-frame' if 't' in r else 'camera RAW DNG','source_sha256':r.get('source_sha256')};photos.append(item);photo_items.append((dest,f'Photos/{name}'))
         photo_cards.append(f'''<figure class="photo-card"><a class="photo-open" href="{item['full']}" data-photo-index="{i-1}" aria-label="Open photo {i}: {html.escape(label)}"><img src="{preview_dir}/photo-{i:02d}-480.webp" srcset="{preview_dir}/photo-{i:02d}-480.webp 480w, {preview_dir}/photo-{i:02d}-960.webp 960w" sizes="(max-width:760px) 50vw, (max-width:1100px) 33vw, 25vw" width="{w}" height="{h}" alt="{html.escape(alt)}" loading="{'eager' if i<=4 else 'lazy'}" decoding="async"></a><figcaption><span class="photo-number">{i:02d}</span><span class="photo-caption">{html.escape(label)}</span><a class="tile-download" href="{item['full']}" download="{name}" aria-label="Download photo {i}, {w} by {h} pixels" title="Download {max(w,h):,} px JPEG">{ICON}<span>JPG</span></a></figcaption></figure>''')
-    reels=read(base/'_Pipeline/reels.json');reels.sort(key=lambda r:(0 if '_0104_' in r['source'] else 1,Path(r['source']).name));videos=[];film_cards=[];video_items=[]
+    reels=read(base/'_Pipeline/reels.json');reels.sort(key=lambda r:(0 if '_0104_' in r['source'] else 1,Path(r['source']).name))
+    if all('gallery_id' in r for r in reels):reels.sort(key=lambda r:r['gallery_id']);videos=[];film_cards=[];video_items=[]
     for i,r in enumerate(reels,1):
         src=Path(r['output']);name=f'pickleball-film-{i:02d}.mp4';dest=docs/'media/reels'/name;copy(src,dest);poster=docs/'media/posters'/f'film-{i:02d}.jpg'
         if not poster.exists():subprocess.run(['ffmpeg','-v','error','-y','-ss','3','-i',str(src),'-frames:v','1','-vf','scale=540:960','-update','1',str(poster)],check=True)

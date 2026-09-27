@@ -10,9 +10,9 @@ The gallery contains 52 full-size current JPEG exports (including five 4K action
 
 - `docs/` is the complete static website served by GitHub Pages from `main`.
 - The release asset `pickleball-photos.zip` contains all 52 finished gallery JPEGs.
-- The GitHub release `tournament-2026-09-19-raw-detail` hosts both ZIPs and all native JPEG downloads. `pickleball-complete-gallery.zip` contains the same 52 JPEGs plus all 10 reels. Keeping native JPEGs in the release keeps the Pages site below its size limit.
+- The GitHub release `tournament-2026-09-19-redeveloped` hosts both ZIPs and all native JPEG downloads. `pickleball-complete-gallery.zip` contains the same 52 JPEGs plus all 10 reels. Keeping native JPEGs in the release keeps the Pages site below its size limit.
 - The untouched 4K camera masters and RAW photos remain in the original OneDrive delivery; they are not part of the public gallery or its ZIPs.
-- Full-size downloads preserve the finished deliverables: 47 RAW-developed photos at 8,184 × 4,600 pixels and 3,840 × 2,160 action frames. They are not RAW files.
+- Full-size downloads are the finished deliverables: 47 RAW-developed photos at 6,138 × 3,450 pixels and 3,840 × 2,160 action frames. They are not RAW files.
 
 ## Rebuild and deploy
 
@@ -68,3 +68,9 @@ The attached house-and-paddle emblem appears in the header and footer. Versioned
 
 
 RAW detail revision (26 September 2026): camera stills are freshly redeveloped from 47 DNGs with source/export checksums, lossless TIFF intermediates and tuned capture sharpening. Camera JPEGs use native dimensions, sRGB, quality 96 and 4:4:4 sampling. Five video freeze-frames are identified separately. `photo_asset_base` stores native JPEGs in the versioned GitHub release; the builder stages upload links under `artifacts/photos`, and deployment publishes verified assets before changing the live page. `RAW_SOURCE_AUDIT.csv` accompanies the release.
+
+## September 27 redevelopment
+
+The September 26 exports were upscaled-looking at full zoom: heavy noise reduction and halo sharpening smeared faces and fabric. All 47 DNGs (matched to the gallery by source SHA-256) were redeveloped from scratch with `scripts/raw/develop.sh`: RawTherapee 5.10 with AMaZE demosaicing, capture deconvolution, light luminance/chroma noise reduction, the embedded DNG camera profile, gentle local contrast, dehaze, shadow lift and skin-protected vibrance (`scripts/raw/finish.pp3`). `scripts/raw/finalize.py` then area-downscales the 16-bit result to 75% (6,138 × 3,450), applies light output sharpening and writes quality-95, 4:4:4 sRGB JPEGs with camera EXIF (GPS removed).
+
+The drone's 50 MP quad-Bayer sensor does not resolve 8,192 px of real detail, so the 75% size looks crisp when zoomed instead of soft. Photo numbering, captions, the five 4K action frames and the ten films are unchanged. To rebuild, point `build_gallery.py --delivery` at a folder whose `_Pipeline` records carry `gallery_id` values.
