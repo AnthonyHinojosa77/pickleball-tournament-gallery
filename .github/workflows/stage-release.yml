@@ -16,6 +16,8 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -q -r requirements.txt
-      - run: python3 scripts/stage_release.py stage
+      # Removing the staging folder before merge also touches this path; there is nothing to upload then.
+      - run: |
+          if [ -f release-staging/assets.json ]; then python3 scripts/stage_release.py stage; else echo "Nothing staged"; fi
         env:
           GH_TOKEN: ${{ github.token }}
