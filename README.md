@@ -4,15 +4,15 @@ A standalone HTML5/CSS/JavaScript gallery for the September 19, 2026 tournament 
 
 Production: https://anthonyhinojosa77.github.io/pickleball-tournament-gallery/
 
-The gallery contains every photo and video shot on September 19: 48 RAW-developed JPEGs, a color-graded recap film and all 7 drone clips, trimmed and graded. It also has lightweight responsive WebP previews, a fullscreen keyboard/touch photo viewer, individual downloads and two ZIP downloads. Films play on the page as 1080p H.264; the recap also downloads in 4K. The camera recorded no audio.
+The gallery contains the September 19 shoot: 41 RAW-developed JPEGs, a color-graded recap film and all 7 drone clips, trimmed and graded. It also has lightweight responsive WebP previews, a fullscreen keyboard/touch photo viewer, individual downloads and two ZIP downloads. Films play on the page as 1080p H.264; the recap also downloads in 4K. The camera recorded no audio.
 
 ## Files and hosting
 
 - `docs/` is the complete static website served by GitHub Pages from `main`.
-- The release asset `pickleball-photos.zip` contains all 48 finished gallery JPEGs.
-- The GitHub release `tournament-2026-09-19-redeveloped` hosts both ZIPs, all full-size JPEGs and the 4K recap (`pickleball-film-01-4k.mp4`). `pickleball-complete-gallery.zip` contains the 48 JPEGs plus the recap and the 7 clips in 1080p. Keeping full-size media in the release keeps the Pages site below its size limit.
+- The release asset `pickleball-photos.zip` contains all 41 finished gallery JPEGs.
+- The GitHub release `tournament-2026-09-19-redeveloped` hosts both ZIPs, all full-size JPEGs and the 4K recap (`pickleball-film-01-4k.mp4`). `pickleball-complete-gallery.zip` contains the 41 JPEGs plus the recap and the 7 clips in 1080p. Keeping full-size media in the release keeps the Pages site below its size limit.
 - The untouched 4K camera masters and RAW photos remain in the original Google Drive upload; they are not part of the public gallery or its ZIPs.
-- Full-size photo downloads are the finished deliverables: 48 RAW-developed photos at 6,138 × 3,450 pixels. They are not RAW files.
+- Full-size photo downloads are the finished deliverables: 41 RAW-developed photos (6,138 × 3,450 pixels before per-photo crops). They are not RAW files.
 
 ## Rebuild and deploy
 
@@ -73,7 +73,9 @@ RAW detail revision (26 September 2026): camera stills are freshly redeveloped f
 
 The September 26 exports smeared faces and fabric at full zoom (heavy noise reduction and halo sharpening). All 48 DNGs from the day were redeveloped from scratch with `scripts/raw/develop.sh`: RawTherapee 5.10 with AMaZE demosaicing, capture deconvolution, light noise reduction, the embedded DNG camera profile, gentle local contrast, dehaze, shadow lift and skin-protected vibrance (`scripts/raw/finish.pp3`). `scripts/raw/finalize.py` then area-downscales the 16-bit result to 75% (6,138 × 3,450), applies output sharpening and writes quality-95, 4:4:4 sRGB JPEGs with camera EXIF (GPS removed). The drone's 50 MP quad-Bayer sensor does not resolve 8,192 px of real detail, so the 75% size looks crisp when zoomed.
 
-The gallery now holds only what was shot: the five video freeze-frames were removed, the previously omitted photo `DJI_20260919113628_0098_D` was added, and the ten cropped vertical 60-second reels were replaced by a recap film plus all seven clips in their original framing. `scripts/video/edit.py` cuts and grades them from the second-by-second edit decisions in `scripts/video/edl.json` (dead moments such as empty-wall pans, whip pans and the landing removed; same grade intent as the photos). Photos and films are numbered in shooting order, with the group photo first. `config.json` records the expected counts, which the builder and validator enforce.
+After the develop, every frame was reviewed individually at full size. `scripts/raw/adjustments.json` records the per-photo decisions: highlight recovery for blown ceilings and the sponsor banner, lifted exposure for the dim DJ-booth frames, crops that remove empty ceiling or an obstructing edge, and an automatic correction of the slight warm-magenta cast measured on neutral walls and court surround. Seven sponsor-banner frames were held back from the gallery because of motion blur, missed focus or camera shake; sharper frames of the same banner are included, and the originals remain in Google Drive.
+
+The gallery holds only what was shot: the five video freeze-frames were removed, the previously omitted photo `DJI_20260919113628_0098_D` was added, and the ten cropped vertical 60-second reels were replaced by a recap film plus all seven clips in their original framing. `scripts/video/edit.py` cuts and grades them from the second-by-second edit decisions in `scripts/video/edl.json` (dead moments such as empty-wall pans, whip pans and the landing removed; same grade intent as the photos). Photos and films are numbered in shooting order, with the group photo first. `config.json` records the expected counts, which the builder and validator enforce.
 
 ### Publishing without the GitHub CLI
 
