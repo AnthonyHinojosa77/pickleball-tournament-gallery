@@ -1,0 +1,238 @@
+{
+ "note": "Edit decisions from a second-by-second review of the September 19 footage. Times are seconds in the camera file.",
+ "clips": [
+  {
+   "source": "DJI_20260919093643_0085_D.MP4",
+   "keep": [
+    [
+     2,
+     32
+    ],
+    [
+     36,
+     93
+    ],
+    [
+     95,
+     113
+    ],
+    [
+     124,
+     152
+    ]
+   ],
+   "removed": "obstructed first seconds, empty-wall pan, whip pan, wall/door hold, pilot close-up and landing"
+  },
+  {
+   "source": "DJI_20260919104603_0089_D.MP4",
+   "keep": [
+    [
+     0,
+     14
+    ],
+    [
+     17,
+     45
+    ],
+    [
+     47,
+     75
+    ],
+    [
+     77,
+     99
+    ],
+    [
+     101,
+     144
+    ],
+    [
+     151,
+     156
+    ]
+   ],
+   "removed": "empty-wall pans, whip pan, empty court, banner-only pan, stairwell and landing"
+  },
+  {
+   "source": "DJI_20260919113538_0095_D.MP4",
+   "keep": [
+    [
+     0,
+     25.9
+    ]
+   ],
+   "removed": "nothing"
+  },
+  {
+   "source": "DJI_20260919113711_0104_D.MP4",
+   "keep": [
+    [
+     0,
+     33.2
+    ]
+   ],
+   "removed": "nothing"
+  },
+  {
+   "source": "DJI_20260919113830_0106_D.MP4",
+   "keep": [
+    [
+     0,
+     153.6
+    ]
+   ],
+   "removed": "nothing"
+  },
+  {
+   "source": "DJI_20260919132926_0109_D.MP4",
+   "keep": [
+    [
+     0,
+     23
+    ],
+    [
+     25,
+     60
+    ],
+    [
+     64,
+     87
+    ],
+    [
+     97,
+     103.2
+    ]
+   ],
+   "removed": "empty court, stairwell wall, exit-door wall hold"
+  },
+  {
+   "source": "DJI_20260919133248_0116_D.MP4",
+   "keep": [
+    [
+     0,
+     32.1
+    ]
+   ],
+   "removed": "nothing"
+  }
+ ],
+ "recap": [
+  [
+   "DJI_20260919113711_0104_D.MP4",
+   0.5,
+   6.5
+  ],
+  [
+   "DJI_20260919093643_0085_D.MP4",
+   2.5,
+   8
+  ],
+  [
+   "DJI_20260919104603_0089_D.MP4",
+   8,
+   13
+  ],
+  [
+   "DJI_20260919132926_0109_D.MP4",
+   17,
+   22
+  ],
+  [
+   "DJI_20260919113830_0106_D.MP4",
+   8,
+   14
+  ],
+  [
+   "DJI_20260919104603_0089_D.MP4",
+   18.5,
+   22.5
+  ],
+  [
+   "DJI_20260919104603_0089_D.MP4",
+   48,
+   53
+  ],
+  [
+   "DJI_20260919093643_0085_D.MP4",
+   44,
+   48
+  ],
+  [
+   "DJI_20260919113538_0095_D.MP4",
+   17,
+   23
+  ],
+  [
+   "DJI_20260919104603_0089_D.MP4",
+   151,
+   156
+  ],
+  [
+   "DJI_20260919132926_0109_D.MP4",
+   1.5,
+   7
+  ],
+  [
+   "DJI_20260919093643_0085_D.MP4",
+   67,
+   72
+  ],
+  [
+   "DJI_20260919104603_0089_D.MP4",
+   109,
+   114
+  ],
+  [
+   "DJI_20260919113830_0106_D.MP4",
+   60,
+   66
+  ],
+  [
+   "DJI_20260919104603_0089_D.MP4",
+   115,
+   120
+  ],
+  [
+   "DJI_20260919132926_0109_D.MP4",
+   72,
+   77
+  ],
+  [
+   "DJI_20260919113711_0104_D.MP4",
+   24,
+   31
+  ],
+  [
+   "DJI_20260919104603_0089_D.MP4",
+   120,
+   125
+  ],
+  [
+   "DJI_20260919132926_0109_D.MP4",
+   97,
+   102.5
+  ],
+  [
+   "DJI_20260919093643_0085_D.MP4",
+   125,
+   131
+  ],
+  [
+   "DJI_20260919132926_0109_D.MP4",
+   50,
+   55
+  ],
+  [
+   "DJI_20260919113830_0106_D.MP4",
+   144,
+   152
+  ]
+ ],
+ "music": {
+  "file": "music/Enter the Party.mp3",
+  "source": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Enter%20the%20Party.mp3",
+  "credit": "Enter the Party Kevin MacLeod (incompetech.com) Licensed under Creative Commons: By Attribution 4.0 https://creativecommons.org/licenses/by/4.0/",
+  "fade_out": 4.0,
+  "loudness_lufs": -16
+ }
+}

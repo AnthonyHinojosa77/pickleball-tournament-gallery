@@ -76,11 +76,11 @@ def main():
     digest=sha(archive);release=release_for_tag(repo,tag)
     photo_archive=ROOT/'artifacts/pickleball-photos.zip'
     archives=[archive,photo_archive]
-    upload_files=archives+sorted((ROOT/'artifacts/photos').glob('*.jpg')) if cfg.get('photo_asset_base') else archives
+    upload_files=archives+sorted((ROOT/'artifacts/photos').glob('*.jpg'))+sorted((ROOT/'artifacts/films').glob('*.mp4')) if cfg.get('photo_asset_base') else archives
     if (ROOT/'artifacts/RAW_SOURCE_AUDIT.csv').exists():upload_files.append(ROOT/'artifacts/RAW_SOURCE_AUDIT.csv')
     print('Publishing corrected collection ZIPs…',flush=True)
     notes=ROOT/'artifacts/release-notes.txt'
-    notes.write_text('Fresh development of 47 original DNGs through lossless TIFF intermediates, tuned capture deconvolution, the approved color finish and restrained noise reduction. The 47 native-resolution camera JPEGs use quality 96 and 4:4:4 color sampling. Five separately identified 4K video stills and ten drone films are retained.\n\nCamera originals remain untouched in OneDrive.\n\n'+''.join(f'{p.name} SHA-256: {sha(p)}\n' for p in upload_files))
+    notes.write_text('All photos from the day, freshly developed from the camera RAW files, and every drone film as an untouched 4K camera original. The complete ZIP includes the films in 1080p.\n\n'+''.join(f'{p.name} SHA-256: {sha(p)}\n' for p in upload_files))
     if release is None:
         run('gh','release','create',tag,*[str(p) for p in archives],'--repo',repo,'--target','main','--title','Tournament — refined photos and drone films','--notes-file',str(notes))
     else:

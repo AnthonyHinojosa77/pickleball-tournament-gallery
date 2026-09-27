@@ -1,0 +1,12 @@
+[Version]
+AppVersion=5.10
+Version=351
+
+[Exposure]
+Compensation=0.1
+HighlightCompr=60
+HighlightComprThreshold=20
+
+[HLRecovery]
+Enabled=true
+Method=Coloropp

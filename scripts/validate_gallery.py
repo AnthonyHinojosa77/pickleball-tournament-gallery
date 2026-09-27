@@ -25,6 +25,7 @@ class Document(HTMLParser):
 
 def main():
     manifest = json.loads((DOCS/'media-manifest.json').read_text())
+    cfg = json.loads((ROOT/'config.json').read_text()); photos_n, films_n = cfg['expected_photos'], cfg['expected_videos']
     build = json.loads((ROOT/'artifacts/build.json').read_text())
     source = (DOCS/'index.html').read_text()
     assert '@@' not in source and '/Users/' not in source
@@ -43,9 +44,9 @@ def main():
             if parsed.fragment: assert parsed.fragment in doc.ids, value
         if tag == 'img': assert 'alt' in attrs
         if tag == 'video': assert all(k in attrs for k in ['controls', 'playsinline', 'poster']) and attrs['preload'] == 'none'
-    assert len([t for t,a in doc.tags if t == 'video']) == 10
-    assert len([a for t,a in doc.tags if 'data-photo-index' in a]) == 52
-    assert len(manifest['photos']) == 52 and len(manifest['videos']) == 10
+    assert len([t for t,a in doc.tags if t == 'video']) == films_n
+    assert len([a for t,a in doc.tags if 'data-photo-index' in a]) == photos_n
+    assert len(manifest['photos']) == photos_n and len(manifest['videos']) == films_n
     for p in manifest['photos']:
         path = ROOT/'artifacts/photos'/p['filename'] if urlparse(p['full']).scheme else DOCS/p['full']
         assert sha(path) == p['sha256']
@@ -59,11 +60,17 @@ def main():
         path = DOCS/v['file']; assert sha(path) == v['sha256']
         data = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(path)]))
         video = next(s for s in data['streams'] if s['codec_type']=='video')
-        audio = next(s for s in data['streams'] if s['codec_type']=='audio')
-        assert (video['width'],video['height']) == (1080,1920) and video['codec_name']=='h264'
-        assert audio['codec_name']=='aac' and float(data['format']['duration']) <= 60.1
-        with Image.open(DOCS/v['poster']) as im: im.load(); assert im.size == (540,960)
-    for path, count, digest in [(ROOT/'artifacts/pickleball-photos.zip',52,build['photos_zip_sha256']), (ROOT/'artifacts/pickleball-complete-gallery.zip',62,build['complete_zip_sha256'])]:
+        assert (video['width'],video['height']) == (v['width'],v['height']) and {v['width'],v['height']} == {1920,1080}
+        assert video['codec_name']=='h264' and video['pix_fmt']=='yuv420p'
+        if urlparse(v['download']).scheme:
+            original = ROOT/'artifacts/films'/Path(v['download']).name
+            assert sha(original) == v['download_sha256'] and original.stat().st_size < 2*2**30, 'GitHub release asset limit'
+            full = json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(original)]))
+            assert abs(float(full['format']['duration'])-float(data['format']['duration'])) < 0.2, 'Download must match the page film'
+        else:
+            assert v['download'] == v['file'] and v['download_sha256'] == v['sha256']
+        with Image.open(DOCS/v['poster']) as im: im.load(); assert (im.width>im.height) == (v['width']>v['height'])
+    for path, count, digest in [(ROOT/'artifacts/pickleball-photos.zip',photos_n,build['photos_zip_sha256']), (ROOT/'artifacts/pickleball-complete-gallery.zip',photos_n+films_n,build['complete_zip_sha256'])]:
         assert sha(path) == digest
         with zipfile.ZipFile(path) as z:
             assert z.testzip() is None and len(z.namelist())==count
@@ -71,8 +78,9 @@ def main():
     files = [p for p in DOCS.rglob('*') if p.is_file()]
     assert all(p.stat().st_size < 100*2**20 for p in files), 'GitHub per-file limit exceeded'
     assert sum(p.stat().st_size for p in files) < 1_000_000_000, 'GitHub Pages site limit exceeded'
+    for path, _, _ in [(ROOT/'artifacts/pickleball-photos.zip',0,0),(ROOT/'artifacts/pickleball-complete-gallery.zip',0,0)]: assert path.stat().st_size < 2*2**30, 'GitHub release asset limit'
     subprocess.run(['node','--check',str(DOCS/'app.js')],check=True)
     subprocess.run(['node',str(ROOT/'scripts/test_lightbox.cjs')],check=True)
-    result = {'passed':True,'photos':52,'videos':10,'checked_local_references':local_links,'published_files':len(files),'published_bytes':sum(p.stat().st_size for p in files),'zip_integrity':'passed','media_sha256':'passed','lightbox_logic':'passed','browser_visual_testing':'not performed'}
+    result = {'passed':True,'photos':photos_n,'videos':films_n,'checked_local_references':local_links,'published_files':len(files),'published_bytes':sum(p.stat().st_size for p in files),'zip_integrity':'passed','media_sha256':'passed','lightbox_logic':'passed','browser_visual_testing':'not performed'}
     (ROOT/'validation.json').write_text(json.dumps(result,indent=2)+'\n'); print(json.dumps(result,indent=2),flush=True)
 if __name__=='__main__': main()

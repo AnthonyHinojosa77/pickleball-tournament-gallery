@@ -1,0 +1,23 @@
+name: Stage gallery release
+# Uploads the finished media to a DRAFT release. Nothing becomes public until publish-release runs.
+on:
+  push:
+    paths: ['release-staging/assets.json']
+permissions:
+  contents: write
+concurrency: stage-release
+jobs:
+  stage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -q -r requirements.txt
+      # Removing the staging folder before merge also touches this path; there is nothing to upload then.
+      - run: |
+          if [ -f release-staging/assets.json ]; then python3 scripts/stage_release.py stage; else echo "Nothing staged"; fi
+        env:
+          GH_TOKEN: ${{ github.token }}

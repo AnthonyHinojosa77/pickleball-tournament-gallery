@@ -38,5 +38,5 @@ const path = require('node:path');
   assert.ok(!/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/.test(html));
   const app=fs.readFileSync(path.join(__dirname,'../docs/app.js'),'utf8');
   assert.ok(!app.includes("addEventListener('touchend'"),'Legacy swipe handler must not intercept pinch/pan gestures');
-  console.log('52 photos × 4 viewport sizes: native zoom, double-tap levels, portrait srcsets and source paths passed.');
+  console.log(manifest.photos.length+' photos × 4 viewport sizes: native zoom, double-tap levels, portrait srcsets and source paths passed.');
 })().catch(error=>{console.error(error);process.exit(1)});
