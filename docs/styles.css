@@ -14,3 +14,25 @@
 
 .tournament-emblem{display:block;width:58px;height:58px;object-fit:contain;mix-blend-mode:multiply}.footer-identity{display:flex;align-items:center;gap:24px}.footer-emblem{width:100px;height:100px;object-fit:contain;background:white;border-radius:14px;padding:5px;flex:none}@media(max-width:760px){.tournament-emblem{width:46px;height:46px}.footer-identity{gap:18px}.footer-emblem{width:76px;height:76px}.footer-identity .footer-slogan{font-size:2.5rem}}
 .save-toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;z-index:200000;padding:12px 18px;border-radius:999px;background:var(--ink);color:var(--paper);font:700 .85rem/1.2 system-ui,sans-serif;pointer-events:none;transition:opacity .2s,transform .2s}.save-toast.is-visible{opacity:1;transform:translate(-50%,0)}
+/* Cover photo, photo sections and two-size save (2026-09-28) */
+.cover{position:relative;height:min(78vh,760px);min-height:420px;overflow:hidden;background:var(--ink)}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:55% 45%}
+.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,20,15,0) 30%,rgba(10,20,15,.55) 55%,rgba(10,20,15,.9) 100%)}
+.cover-copy{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:32px 32px 36px;color:#fff;text-shadow:0 1px 12px rgba(0,0,0,.45)}
+.cover-kicker{margin:0 0 10px;font-size:.7rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--yellow)}
+.cover-title{margin:0 0 10px;font:400 clamp(2.2rem,5vw,4.4rem)/1 Impact,"Arial Narrow",sans-serif;letter-spacing:.01em}
+.cover-meta{margin:0 0 22px;font-size:.9rem;opacity:.92}
+.cover-button{display:inline-flex;min-height:48px}
+.section-nav{display:flex;gap:8px;padding:0 32px 22px;overflow-x:auto;scrollbar-width:none}
+.section-nav::-webkit-scrollbar{display:none}
+.section-nav a{flex:none;padding:10px 14px;border:1px solid var(--line);border-radius:999px;font-size:.8rem;font-weight:700;background:#fff}
+.section-nav a span{color:var(--pink);margin-left:4px}
+.photo-section{padding:0 0 28px}
+.photo-section h3{margin:0;padding:10px 32px 14px;font:400 1.35rem/1 Impact,"Arial Narrow",sans-serif;letter-spacing:.02em}
+.photo-section h3 span{font:700 .7rem Arial;color:var(--pink);margin-left:8px;vertical-align:middle}
+.photo-sections .photo-wall{column-gap:4px;padding:0 4px}
+.photo-sections .photo-card{margin:0 0 4px;background:none}
+.photo-sections .photo-open img{display:block;width:100%;height:auto}
+.pswp__saves{display:flex;gap:8px;flex:none}
+.pswp__download--web{background:transparent;border:1px solid rgba(255,253,248,.5);color:#fffdf8}
+@media(max-width:760px){.cover{height:62vh;min-height:360px}.cover-kicker{display:none}.cover-meta{margin-bottom:16px;font-size:.85rem}.cover-copy{padding:20px 16px 24px}.section-nav{padding:0 16px 18px}.photo-section h3{padding:8px 16px 12px}.photo-sections .photo-wall{column-gap:3px;padding:0 3px}.photo-sections .photo-card{margin-bottom:3px}.pswp__caption-bar{flex-wrap:wrap}.pswp__saves{width:100%}.pswp__saves a{flex:1}}

@@ -53,6 +53,10 @@ def main():
         with Image.open(path) as im:
             im.load(); assert im.size == (p['width'],p['height']) and im.mode == 'RGB'
             assert im.info.get('icc_profile'), f'Missing sRGB profile: {path}'
+        with Image.open(DOCS/p['web']) as im:
+            im.load(); assert max(im.size) == 2048 and im.size == (p['web_width'],p['web_height']) and im.info.get('icc_profile'), f"Bad web-size file: {p['web']}"
+            assert (DOCS/p['web']).stat().st_size == p['web_bytes']
+        assert p['section'] in {'group','courts','dj','sponsors'}
         for size in [480,960,2048]:
             with Image.open(DOCS/Path(p['preview']).with_name(f'photo-{p["id"]:02d}-{size}.webp')) as im:
                 im.load(); assert im.width <= size and im.height <= size*2

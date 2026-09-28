@@ -13,6 +13,9 @@ def sha(p):
     with p.open('rb') as f:
         for b in iter(lambda:f.read(2**20),b''):h.update(b)
     return h.hexdigest()
+# Gallery sections, keyed by caption, in page order.
+SECTION_ORDER=[('group','The group'),('courts','On the courts'),('dj','Courtside soundtrack'),('sponsors','Sponsors & organizers')]
+SECTIONS={'The tournament community':'group','Tournament day from above':'courts','On the court':'courts','The courtside soundtrack':'dj','The people behind the event':'sponsors'}
 def title(source):
     stem=Path(source).stem
     if 'Lucha' in stem:return 'The courtside soundtrack'
@@ -39,11 +42,11 @@ def make_zip(path,items):
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--delivery',type=Path,default=ROOT.parent);args=ap.parse_args()
     base=args.delivery.resolve();cfg=read(ROOT/'config.json');docs=ROOT/'docs';artifacts=ROOT/'artifacts';artifacts.mkdir(exist_ok=True)
-    version=cfg['media_version']; photo_dir=f'media/photos-{version}'; preview_dir=f'media/previews-{version}'
+    version=cfg['media_version']; photo_dir=f'media/photos-{version}'; preview_dir=f'media/previews-{version}'; web_dir=f'media/web-{version}'
     photo_base=cfg.get('photo_asset_base')
     release_base=f'https://github.com/{cfg["repository"]}/releases/download/{cfg["release_tag"]}'
     if photo_base:(artifacts/'photos').mkdir(exist_ok=True)
-    for folder in [photo_dir,preview_dir,'media/reels','media/posters']:(docs/folder).mkdir(parents=True,exist_ok=True)
+    for folder in [photo_dir,preview_dir,web_dir,'media/reels','media/posters']:(docs/folder).mkdir(parents=True,exist_ok=True)
     stills=base/'_Pipeline/action-stills.json'
     records=read(base/'_Pipeline/photos.json')+(read(stills) if stills.exists() else [])
     assert len(records)==cfg['expected_photos'],f"Expected {cfg['expected_photos']} photos, found {len(records)}"
@@ -68,8 +71,14 @@ def main():
                 preview_path=docs/preview_dir/f'photo-{i:02d}-{size}.webp'
                 if not preview_path.exists() or preview_path.stat().st_mtime_ns<src.stat().st_mtime_ns:
                     preview=im.copy();preview.thumbnail((size,size if size==2048 else size*2));preview.save(preview_path,'WEBP',quality=88 if size==2048 else 82,method=5)
+            # Web-size JPEG (2048 px long edge, ~1-2 MB) for posting to social media; the full-size file is the deliverable.
+            web_path=docs/web_dir/f'pickleball-photo-{i:02d}-web.jpg'
+            if not web_path.exists() or web_path.stat().st_mtime_ns<src.stat().st_mtime_ns:
+                web=im.copy();web.thumbnail((2048,2048),Image.LANCZOS)
+                web.save(web_path,'JPEG',quality=88,optimize=True,progressive=True,icc_profile=ImageCms.ImageCmsProfile(ImageCms.createProfile('sRGB')).tobytes())
+            with Image.open(web_path) as wi:web_size=wi.size
         label='On the court' if 't' in r else title(r['source']);alt=f'{label} at the Real Estate Pickleball Tournament, Corpus Christi Athletic Club. Photo {i}.'
-        item={'id':i,'filename':name,'title':label,'alt':alt,'width':w,'height':h,'bytes':dest.stat().st_size,'full':f'{photo_base}/{name}' if photo_base else f'{photo_dir}/{name}','preview':f'{preview_dir}/photo-{i:02d}-960.webp','display':f'{preview_dir}/photo-{i:02d}-2048.webp','sha256':sha(dest),'source_type':'video freeze-frame' if 't' in r else 'camera RAW DNG','source_sha256':r.get('source_sha256')};photos.append(item);photo_items.append((dest,f'Photos/{name}'))
+        item={'id':i,'filename':name,'title':label,'alt':alt,'width':w,'height':h,'bytes':dest.stat().st_size,'full':f'{photo_base}/{name}' if photo_base else f'{photo_dir}/{name}','preview':f'{preview_dir}/photo-{i:02d}-960.webp','display':f'{preview_dir}/photo-{i:02d}-2048.webp','web':f'{web_dir}/pickleball-photo-{i:02d}-web.jpg','web_width':web_size[0],'web_height':web_size[1],'web_bytes':web_path.stat().st_size,'section':SECTIONS.get(label,'courts'),'sha256':sha(dest),'source_type':'video freeze-frame' if 't' in r else 'camera RAW DNG','source_sha256':r.get('source_sha256')};photos.append(item);photo_items.append((dest,f'Photos/{name}'))
     # Films play on the page in HD; a film with a separate `download` (the 4K recap) is served from the release.
     reels=read(base/'_Pipeline/reels.json');reels.sort(key=lambda r:Path(r['source']).name)
     assert len(reels)==cfg['expected_videos'],f"Expected {cfg['expected_videos']} films, found {len(reels)}"
@@ -98,7 +107,7 @@ def main():
     (docs/'media.js').write_text('window.GALLERY_DATA = '+json.dumps(data,ensure_ascii=False,separators=(',',':'))+';\n')
     dump(docs/'media-manifest.json',data)
     # Superseded exports are in Git history; omit them from the deployed site.
-    for obsolete in [docs/'media/photos',docs/'media/previews',*[d for d in (docs/'media').glob('previews-*') if d.name!=Path(preview_dir).name]]:
+    for obsolete in [docs/'media/photos',docs/'media/previews',*[d for d in (docs/'media').glob('previews-*') if d.name!=Path(preview_dir).name],*[d for d in (docs/'media').glob('web-*') if d.name!=Path(web_dir).name]]:
         if obsolete.exists():shutil.rmtree(obsolete)
     obsolete_zip=docs/'downloads/pickleball-photos.zip'
     if obsolete_zip.exists():obsolete_zip.unlink()

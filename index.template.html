@@ -20,14 +20,19 @@
     <a class="header-download" href="@@PHOTO_ZIP_URL@@" download>Get the photos <span aria-hidden="true">↓</span></a>
   </header>
   <main id="top">
+    <section class="cover" aria-label="Tournament group photo">
+      <img src="@@COVER_2048@@" srcset="@@COVER_960@@ 960w, @@COVER_2048@@ 2048w" sizes="100vw" alt="@@COVER_ALT@@" fetchpriority="high">
+      <div class="cover-copy"><p class="cover-kicker">Real Estate Industry Pickleball Tournament</p><p class="cover-title">Tournament day, from above.</p><p class="cover-meta">Corpus Christi Athletic Club · September 19, 2026</p><a class="button button-primary cover-button" href="#photos">View the photos <span aria-hidden="true">↓</span></a></div>
+    </section>
     <section class="event-heading" aria-labelledby="event-title">
-      <div class="event-logo"><h1 id="event-title" class="visually-hidden">Real Estate Industry Pickleball Tournament</h1><img src="brand/tournament-logo.jpg" width="1280" height="940" alt="Real Estate Industry Pickleball Tournament. Friendly competition. Real connections. Lasting impact." fetchpriority="high"></div>
+      <div class="event-logo"><h1 id="event-title" class="visually-hidden">Real Estate Industry Pickleball Tournament</h1><img src="brand/tournament-logo.jpg" width="1280" height="940" alt="Real Estate Industry Pickleball Tournament. Friendly competition. Real connections. Lasting impact." loading="lazy"></div>
       <div class="event-details"><p class="eyebrow">CORPUS CHRISTI, TEXAS <span>09.19.26</span></p><p class="hero-title">GOOD GAMES.<br><em>GREAT CONNECTIONS.</em></p><p class="hero-copy">The people, the rallies, and the view from above. Relive tournament day.</p><p class="venue">Corpus Christi Athletic Club</p><p class="event-meta">September 19, 2026 · @@PHOTO_COUNT@@ photos · @@FILM_COUNT@@ drone films</p><div class="download-links"><a class="button button-primary" href="@@PHOTO_ZIP_URL@@" download>Download all photos <span>@@PHOTO_ZIP_SIZE@@ ZIP ↓</span></a><a class="button button-secondary" href="@@COMPLETE_ZIP_URL@@">Photos + drone films <span>@@COMPLETE_ZIP_SIZE@@ ZIP ↓</span></a></div></div>
     </section>
     <div class="event-ribbon" aria-hidden="true"><span>FRIENDLY COMPETITION.</span><i>✳</i><span>REAL CONNECTIONS.</span><i>✳</i><span>LASTING IMPACT.</span></div>
     <section id="photos" aria-labelledby="photos-heading">
-      <div class="section-heading"><div><p class="section-kicker">THE PEOPLE. THE PLAY. THE DAY.</p><h2 id="photos-heading">THE PHOTO COLLECTION <span>01—@@PHOTO_COUNT@@</span></h2></div><p>Tap a photo. Pinch or double-tap to zoom.<br> Download the original-size JPEG.</p></div>
-      <div class="photo-wall" id="photo-wall">@@PHOTO_CARDS@@</div>
+      <div class="section-heading"><div><p class="section-kicker">THE PEOPLE. THE PLAY. THE DAY.</p><h2 id="photos-heading">THE PHOTO COLLECTION <span>01—@@PHOTO_COUNT@@</span></h2></div><p>Tap a photo to view it full screen, zoom in and save it.<br> Full size for printing · web size for social media.</p></div>
+      <nav class="section-nav" aria-label="Photo sections">@@SECTION_NAV@@</nav>
+      <div class="photo-sections" id="photo-wall">@@PHOTO_CARDS@@</div>
     </section>
     <section id="films" class="films-section" aria-labelledby="films-heading">
       <div class="section-heading"><div><p class="section-kicker">COURTSIDE, FROM ABOVE.</p><h2 id="films-heading">A DIFFERENT PERSPECTIVE <span>@@FILM_COUNT@@ FILMS</span></h2></div><p>A tournament recap film plus every drone clip<br> Color-graded · recap downloads in 4K</p></div>
