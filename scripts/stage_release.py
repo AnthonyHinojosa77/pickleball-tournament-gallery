@@ -37,7 +37,8 @@ def prepare():
     (STAGE / 'photos').mkdir(parents=True)
     assets = []
     for p in manifest['photos']:
-        src = ROOT / 'artifacts/photos' / p['filename']; dst = STAGE / 'photos' / p['filename']
+        src = ROOT / 'artifacts/photos' / p['filename'] if p['full'].startswith('https://') else ROOT / 'docs' / p['full']
+        dst = STAGE / 'photos' / p['filename']
         shutil.copyfile(src, dst); assert sha(dst) == p['sha256']
         assets.append({'name': p['filename'], 'sha256': p['sha256'], 'bytes': dst.stat().st_size, 'from': 'staged'})
     (STAGE / 'films').mkdir()

@@ -41,6 +41,7 @@ def main():
     base=args.delivery.resolve();cfg=read(ROOT/'config.json');docs=ROOT/'docs';artifacts=ROOT/'artifacts';artifacts.mkdir(exist_ok=True)
     version=cfg['media_version']; photo_dir=f'media/photos-{version}'; preview_dir=f'media/previews-{version}'
     photo_base=cfg.get('photo_asset_base')
+    release_base=f'https://github.com/{cfg["repository"]}/releases/download/{cfg["release_tag"]}'
     if photo_base:(artifacts/'photos').mkdir(exist_ok=True)
     for folder in [photo_dir,preview_dir,'media/reels','media/posters']:(docs/folder).mkdir(parents=True,exist_ok=True)
     stills=base/'_Pipeline/action-stills.json'
@@ -85,10 +86,10 @@ def main():
         subprocess.run(['ffmpeg','-v','error','-y','-ss',str(r.get('poster_at',3)),'-i',str(dest),'-frames:v','1','-vf','scale=960:-2' if w>h else 'scale=-2:960','-q:v','3','-update','1',str(poster)],check=True)
         if r.get('download'):
             original=artifacts/'films'/f'pickleball-film-{i:02d}-4k.mp4';original.symlink_to(Path(r['download']).resolve())
-            download,download_bytes,download_sha,quality=f'{photo_base}/{original.name}',original.stat().st_size,sha(original),'4K'
+            download,download_bytes,download_sha,quality=f'{release_base}/{original.name}',original.stat().st_size,sha(original),'4K'
         else:
             download,download_bytes,download_sha,quality=f'media/reels/{name}',dest.stat().st_size,sha(dest),'HD'
-        item={'id':i,'title':r.get('title','Tournament from above'),'file':f'media/reels/{name}','poster':f'media/posters/{poster.name}','width':w,'height':h,'duration':duration,'bytes':dest.stat().st_size,'sha256':sha(dest),'download':download,'download_bytes':download_bytes,'download_sha256':download_sha,'download_quality':quality,'source':r['source']};videos.append(item);video_items.append((dest,f'Films/{name}'))
+        item={'id':i,'title':r.get('title','Tournament from above'),'file':f'media/reels/{name}','poster':f'media/posters/{poster.name}','width':w,'height':h,'duration':duration,'bytes':dest.stat().st_size,'sha256':sha(dest),'download':download,'download_bytes':download_bytes,'download_sha256':download_sha,'download_quality':quality,'source':r['source']};videos.append(item);video_items.append((Path(r['zip_source']) if r.get('zip_source') else dest,f'Films/{name}'))
     photo_zip=artifacts/'pickleball-photos.zip';complete_zip=artifacts/'pickleball-complete-gallery.zip'
     print('Creating and CRC-checking ZIP archives…',flush=True);make_zip(photo_zip,photo_items);make_zip(complete_zip,photo_items+video_items)
     zip_url=f'https://github.com/{cfg["repository"]}/releases/download/{cfg["release_tag"]}/{complete_zip.name}'

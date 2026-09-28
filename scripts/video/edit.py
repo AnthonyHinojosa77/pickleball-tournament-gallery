@@ -6,7 +6,7 @@ Outputs in OUT_DIR:
   recap-4k.mp4      ~2 minute recap film, 3840x2160
   recap-1080.mp4    the same film for playback on the page
 The recap carries the licensed music track from edl.json (credited in the file metadata and on the page).
-Usage: edit.py SOURCE_DIR OUT_DIR [clips|recap|music|all]
+Usage: edit.py SOURCE_DIR OUT_DIR [clips|page|recap|music|all]
 """
 import json, subprocess, sys
 from pathlib import Path
@@ -85,9 +85,9 @@ def render(segments, out, size, encode, cards=None):
     return total
 
 
-def web_encode(seconds, ceiling_mb=88):
-    # Capped so every page video stays under GitHub's 100 MB per-file limit.
-    rate = min(9000, int(ceiling_mb * 8 * 1000 / seconds))
+def web_encode(seconds, ceiling_mb=88, max_kbps=9000):
+    # Capped so every video stays under GitHub's 100 MB per-file limit.
+    rate = min(max_kbps, int(ceiling_mb * 8 * 1000 / seconds))
     return ['-c:v', 'libx264', '-preset', 'medium', '-crf', '19', '-maxrate', f'{rate}k', '-bufsize', f'{rate * 2}k',
             '-profile:v', 'high', '-level', '4.1', '-pix_fmt', 'yuv420p']
 
@@ -107,12 +107,16 @@ def main():
     src, out = Path(sys.argv[1]), Path(sys.argv[2]); what = sys.argv[3] if len(sys.argv) > 3 else 'all'
     out.mkdir(parents=True, exist_ok=True)
     edl = json.loads((HERE / 'edl.json').read_text())
-    if what in ('clips', 'all'):
+    if what in ('clips', 'page', 'all'):
+        # 'clips' are the full-quality downloads (complete ZIP); 'page' copies stream on the site at a
+        # lower bitrate so the full-size photos also fit within GitHub Pages' 1 GB site limit.
+        page = what == 'page'
         for n, clip in enumerate(edl['clips'], 1):
             f = src / clip['source']; size = (1080, 1920) if is_vertical(f) else (1920, 1080)
             segs = [(f, a, b) for a, b in clip['keep']]
             seconds = sum(b - a for a, b in clip['keep'])
-            total = render(segs, out / f'clip-{n:02d}.mp4', size, web_encode(seconds))
+            name = f'clip-{n:02d}-page.mp4' if page else f'clip-{n:02d}.mp4'
+            total = render(segs, out / name, size, web_encode(seconds, max_kbps=3500) if page else web_encode(seconds))
             print(f'clip-{n:02d}: {clip["source"]} -> {total:.1f}s', flush=True)
     if what in ('recap', 'all'):
         segs = [(src / f, a, b) for f, a, b in edl['recap']]

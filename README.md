@@ -10,7 +10,7 @@ The gallery contains the September 19 shoot: 42 RAW-developed JPEGs, a color-gra
 
 - `docs/` is the complete static website served by GitHub Pages from `main`.
 - The release asset `pickleball-photos.zip` contains all 42 finished gallery JPEGs.
-- The GitHub release `tournament-2026-09-19-final` hosts both ZIPs, all full-size JPEGs and the 4K recap (`pickleball-film-01-4k.mp4`). `pickleball-complete-gallery.zip` contains the 42 JPEGs plus the recap and the 7 clips in 1080p. Keeping full-size media in the release keeps the Pages site below its size limit.
+- The GitHub release `tournament-2026-09-19-final` hosts both ZIPs and the 4K recap (`pickleball-film-01-4k.mp4`). The full-size JPEGs are served from the gallery site itself, so single-photo downloads never leave the page (github.com links hand off to the GitHub app on phones). On phones that support file sharing, **Save photo** opens the share sheet so the photo goes straight into Photos. `pickleball-complete-gallery.zip` contains the 42 JPEGs plus the recap and the 7 clips in 1080p. The seven clips stream on the page at a lower bitrate (`edit.py page`) so the photos fit within the 1 GB Pages limit; the complete ZIP keeps the full-quality clips.
 - The untouched 4K camera masters and RAW photos remain in the original Google Drive upload; they are not part of the public gallery or its ZIPs.
 - Full-size photo downloads are the finished deliverables: 42 RAW-developed photos (6,138 × 3,450 pixels before per-photo crops). They are not RAW files.
 
