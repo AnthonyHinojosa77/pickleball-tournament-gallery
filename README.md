@@ -84,3 +84,7 @@ Cloud sessions that cannot manage releases publish through GitHub Actions instea
 ## Entrance motion and hand lettering
 
 The cover photo fades and settles in, photos and films fade up as they scroll into view (each after its image loads), and the tournament logo draws itself in band by band, with TOURNAMENT revealed left to right like brush writing. The cover title, "Great connections.", the venue name and "the court." are set in Kaushan Script (the brush script closest to the logo; SIL Open Font License, `scripts/fonts/`) and converted to letter outlines by `scripts/lettering.py`, so each letter draws in and fills. Real text stays on the page for screen readers. Motion runs only when the visitor's device allows it; with reduced motion or without JavaScript everything is shown immediately.
+
+## Vertical Reel
+
+`scripts/video/reel.py SOURCE_DIR OUT.mp4` cuts a 1080×1920 (9:16) version of the recap for Instagram Reels and similar feeds. It uses the same shots, grade, cards and music as the widescreen recap; each shot keeps its middle 65% and is cropped to a portrait window that pans slowly across the frame (pan start and end per shot are in `edl.json` under `reel`). It is not hosted on the gallery page; it is made for posting. Keep the music credit in any post that uses it.
