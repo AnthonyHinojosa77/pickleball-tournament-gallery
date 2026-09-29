@@ -52,6 +52,7 @@ const lightbox = new PhotoSwipeLightbox({
   ...zoomOptions,
   bgOpacity: 1,
   zoom: false,
+  counter: false,  // replaced by the photo-number counter below
   showHideAnimationType: 'fade',
   showAnimationDuration: 150,
   hideAnimationDuration: 150,
@@ -82,6 +83,11 @@ lightbox.on('uiRegister', () => {
   pswp.ui.registerElement({name:'fit',order:11,isButton:true,ariaLabel:'Fit photo to screen',title:'Fit photo to screen',html:'Fit',onClick:() => {
     if (pswp.currSlide) pswp.zoomTo(pswp.currSlide.zoomLevels.fit, undefined, 180);
   }});
+  // Shows the photo's own number (matching the grid badges and file names), not its position on the page.
+  pswp.ui.registerElement({
+    name:'photo-number',className:'pswp__counter',order:5,
+    onInit: (el, instance) => instance.on('change', () => { el.textContent = 'Photo ' + photos[instance.currIndex].id + ' of ' + allPhotos.length; })
+  });
   pswp.ui.registerElement({
     name:'zoom-hint',appendTo:'root',html:'Pinch or double-tap to zoom · drag to explore',
     onInit: el => el.setAttribute('aria-hidden','true')
@@ -102,7 +108,7 @@ lightbox.on('uiRegister', () => {
       saves.append(full, web); copy.append(title, detail, original); el.append(copy, saves);
       instance.on('change', () => {
         const p = photos[instance.currIndex];
-        title.textContent = p.title + ' · Photo ' + p.id;
+        title.textContent = 'Photo ' + p.id + ' · ' + p.title;
         detail.textContent = 'Full ' + p.width.toLocaleString() + ' × ' + p.height.toLocaleString() + ' px, ' + (p.bytes/1e6).toFixed(1) + ' MB · Web ' + (p.web_bytes/1e6).toFixed(1) + ' MB';
         original.href = p.full; original.setAttribute('aria-label', 'Open original photo ' + p.id + ' in a new tab');
         full.href = p.full; full.download = p.filename;

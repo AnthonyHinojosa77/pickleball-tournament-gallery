@@ -17,7 +17,7 @@ def render():
         cards=[]
         for p in group:
             base=Path(p['preview']);small=str(base.with_name(f'photo-{p["id"]:02d}-480.webp'));alt=html.escape(p['alt'])
-            cards.append(f'<figure class="photo-card"><a class="photo-open" href="{p["full"]}" data-photo-index="{p["id"]-1}" data-pswp-width="{p["width"]}" data-pswp-height="{p["height"]}" aria-label="View photo {p["id"]} full screen"><img src="{small}" srcset="{small} 480w, {p["preview"]} 960w" sizes="(max-width:760px) 50vw, (max-width:1100px) 33vw, 25vw" width="{p["width"]}" height="{p["height"]}" alt="{alt}" loading="{"eager" if p["id"]<=4 else "lazy"}" decoding="async"></a></figure>')
+            cards.append(f'<figure class="photo-card"><a class="photo-open" href="{p["full"]}" data-photo-index="{p["id"]-1}" data-pswp-width="{p["width"]}" data-pswp-height="{p["height"]}" aria-label="View photo {p["id"]} full screen"><img src="{small}" srcset="{small} 480w, {p["preview"]} 960w" sizes="(max-width:760px) 50vw, (max-width:1100px) 33vw, 25vw" width="{p["width"]}" height="{p["height"]}" alt="{alt}" loading="{"eager" if p["id"]<=4 else "lazy"}" decoding="async"><span class="photo-badge" aria-hidden="true">{p["id"]}</span></a></figure>')
         sections.append(f'<section class="photo-section" id="section-{key}" aria-labelledby="section-{key}-title"><h3 id="section-{key}-title">{html.escape(name)} <span>{len(group)}</span></h3><div class="photo-wall">{"".join(cards)}</div></section>')
     photos=sections
     for v in m['videos']:

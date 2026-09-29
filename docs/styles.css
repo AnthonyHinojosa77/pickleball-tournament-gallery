@@ -36,3 +36,5 @@
 .pswp__saves{display:flex;gap:8px;flex:none}
 .pswp__download--web{background:transparent;border:1px solid rgba(255,253,248,.5);color:#fffdf8}
 @media(max-width:760px){.cover{height:62vh;min-height:360px}.cover-kicker{display:none}.cover-meta{margin-bottom:16px;font-size:.85rem}.cover-copy{padding:20px 16px 24px}.section-nav{padding:0 16px 18px}.photo-section h3{padding:8px 16px 12px}.photo-sections .photo-wall{column-gap:3px;padding:0 3px}.photo-sections .photo-card{margin-bottom:3px}.pswp__caption-bar{flex-wrap:wrap}.pswp__saves{width:100%}.pswp__saves a{flex:1}}
+.photo-badge{position:absolute;left:6px;top:6px;min-width:26px;padding:4px 7px;border-radius:999px;background:rgba(17,25,21,.72);color:#fffdf8;font:700 .7rem/1 Arial,sans-serif;text-align:center;line-height:1}
+.pswp__counter{min-width:120px}
