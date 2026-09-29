@@ -80,3 +80,7 @@ The gallery holds only what was shot: the five video freeze-frames were removed,
 ### Publishing without the GitHub CLI
 
 Cloud sessions that cannot manage releases publish through GitHub Actions instead. `python3 scripts/stage_release.py prepare` copies the full-size JPEGs into `release-staging/`, splits the 4K recap into parts under 100 MB and records the checksum of every release asset. Pushing it runs `.github/workflows/stage-release.yml`, which reassembles the files, rebuilds the ZIPs, rejects any checksum mismatch and uploads everything to a draft release. Merging the gallery update into `main` runs `publish-release.yml`, which publishes that draft as the site goes live. Remove `release-staging/` before merging, and squash-merge so the staged copies stay out of `main`'s history.
+
+## Entrance motion and hand lettering
+
+The cover photo fades and settles in, photos and films fade up as they scroll into view (each after its image loads), and the tournament logo draws itself in band by band, with TOURNAMENT revealed left to right like brush writing. The cover title, "Great connections.", the venue name and "the court." are set in Kaushan Script (the brush script closest to the logo; SIL Open Font License, `scripts/fonts/`) and converted to letter outlines by `scripts/lettering.py`, so each letter draws in and fills. Real text stays on the page for screen readers. Motion runs only when the visitor's device allows it; with reduced motion or without JavaScript everything is shown immediately.

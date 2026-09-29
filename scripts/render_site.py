@@ -2,6 +2,7 @@
 """Rebuild presentation from the existing verified media, without re-encoding or rebuilding ZIPs."""
 from pathlib import Path
 import json,html
+from lettering import lettering
 ROOT=Path(__file__).resolve().parents[1]
 ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg>'
 def render():
@@ -25,7 +26,9 @@ def render():
         films.append(f'<figure class="film-card"><video controls playsinline preload="none" poster="{v["poster"]}" width="{v["width"]}" height="{v["height"]}" aria-label="Film {v["id"]}: {label}, {length}{", with music" if v["id"]==1 else ", no recorded sound"}"><source src="{v["file"]}" type="video/mp4"><p>Your browser cannot play this video. <a href="{v["download"]}" download>Download MP4</a>.</p></video><figcaption><div><h3>{v["id"]:02d} / {label}</h3><p>{length} · {v["download_quality"]}</p></div><a class="tile-download" href="{v["download"]}" download="{filename}" aria-label="Download film {v["id"]}, {v["download_quality"]} MP4, {v["download_bytes"]/1e6:.0f} MB">{ICON}<span>{v["download_quality"]}</span></a></figcaption></figure>')
     # Archive byte counts are in the media build receipt; no need to hydrate ZIPs to restyle the site.
     photo_bytes=build['photos_zip_bytes'];all_bytes=build['complete_zip_bytes']
-    tokens={'MEDIA_VERSION':cfg['media_version'],'UI_VERSION':cfg.get('ui_version',cfg['media_version']),'PHOTO_CARDS':'\n'.join(photos),'SECTION_NAV':''.join(nav),'COVER_960':m['photos'][0]['preview'],'COVER_2048':m['photos'][0]['display'],'COVER_ALT':html.escape(m['photos'][0]['alt']),'FILM_CARDS':'\n'.join(films),'PHOTO_ZIP_URL':m['photo_zip'],'COMPLETE_ZIP_URL':m['complete_zip'],'PHOTO_ZIP_SIZE':f'{photo_bytes/1e6:.0f} MB','COMPLETE_ZIP_SIZE':f'{all_bytes/1e6:.0f} MB','PHOTO_COUNT':str(len(m['photos'])),'FILM_COUNT':str(len(m['videos']))}
+    tokens={'MEDIA_VERSION':cfg['media_version'],'UI_VERSION':cfg.get('ui_version',cfg['media_version']),'PHOTO_CARDS':'\n'.join(photos),'SECTION_NAV':''.join(nav),'COVER_960':m['photos'][0]['preview'],'COVER_2048':m['photos'][0]['display'],'COVER_ALT':html.escape(m['photos'][0]['alt']),'FILM_CARDS':'\n'.join(films),'PHOTO_ZIP_URL':m['photo_zip'],'COMPLETE_ZIP_URL':m['complete_zip'],'PHOTO_ZIP_SIZE':f'{photo_bytes/1e6:.0f} MB','COMPLETE_ZIP_SIZE':f'{all_bytes/1e6:.0f} MB','PHOTO_COUNT':str(len(m['photos'])),'FILM_COUNT':str(len(m['videos'])),
+            'LETTER_COVER':lettering(['Tournament day,','from above.'],'lettering-cover'),'LETTER_CONNECTIONS':lettering(['Great connections.'],'lettering-connections'),
+            'LETTER_VENUE':lettering(['Corpus Christi Athletic Club'],'lettering-venue'),'LETTER_COURT':lettering(['the court.'],'lettering-court')}
     s=(ROOT/'index.template.html').read_text()
     for key,value in tokens.items():s=s.replace('@@'+key+'@@',value)
     assert '@@' not in s

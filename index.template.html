@@ -6,6 +6,8 @@
   <meta name="theme-color" content="#fffdf8">
   <meta name="description" content="Friendly competition. Real connections. Lasting impact. The Real Estate Industry Pickleball Tournament photo and drone film gallery, Corpus Christi Athletic Club.">
   <title>Real Estate Industry Pickleball Tournament — Event Gallery</title>
+  <!-- Entrance animations run only for visitors who have not asked their device to reduce motion. -->
+  <script>if(matchMedia('(prefers-reduced-motion: no-preference)').matches)document.documentElement.classList.add('motion')</script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="vendor/photoswipe.css">
   <link rel="stylesheet" href="styles.css?v=@@UI_VERSION@@">
@@ -22,11 +24,11 @@
   <main id="top">
     <section class="cover" aria-label="Tournament group photo">
       <img src="@@COVER_2048@@" srcset="@@COVER_960@@ 960w, @@COVER_2048@@ 2048w" sizes="100vw" alt="@@COVER_ALT@@" fetchpriority="high">
-      <div class="cover-copy"><p class="cover-kicker">Real Estate Industry Pickleball Tournament</p><p class="cover-title">Tournament day, from above.</p><p class="cover-meta">Corpus Christi Athletic Club · September 19, 2026</p><a class="button button-primary cover-button" href="#photos">View the photos <span aria-hidden="true">↓</span></a></div>
+      <div class="cover-copy"><p class="cover-kicker">Real Estate Industry Pickleball Tournament</p><p class="cover-title"><span class="visually-hidden">Tournament day, from above.</span>@@LETTER_COVER@@</p><p class="cover-meta">Corpus Christi Athletic Club · September 19, 2026</p><a class="button button-primary cover-button" href="#photos">View the photos <span aria-hidden="true">↓</span></a></div>
     </section>
     <section class="event-heading" aria-labelledby="event-title">
-      <div class="event-logo"><h1 id="event-title" class="visually-hidden">Real Estate Industry Pickleball Tournament</h1><img src="brand/tournament-logo.jpg" width="1280" height="940" alt="Real Estate Industry Pickleball Tournament. Friendly competition. Real connections. Lasting impact." loading="lazy"></div>
-      <div class="event-details"><p class="eyebrow">CORPUS CHRISTI, TEXAS <span>09.19.26</span></p><p class="hero-title">GOOD GAMES.<br><em>GREAT CONNECTIONS.</em></p><p class="hero-copy">The people, the rallies, and the view from above. Relive tournament day.</p><p class="venue">Corpus Christi Athletic Club</p><p class="event-meta">September 19, 2026 · @@PHOTO_COUNT@@ photos · @@FILM_COUNT@@ drone films</p><div class="download-links"><a class="button button-primary" href="@@PHOTO_ZIP_URL@@" download>Download all photos <span>@@PHOTO_ZIP_SIZE@@ ZIP ↓</span></a><a class="button button-secondary" href="@@COMPLETE_ZIP_URL@@">Photos + drone films <span>@@COMPLETE_ZIP_SIZE@@ ZIP ↓</span></a></div></div>
+      <div class="event-logo"><h1 id="event-title" class="visually-hidden">Real Estate Industry Pickleball Tournament</h1><img src="brand/tournament-logo.jpg" width="1280" height="940" alt="Real Estate Industry Pickleball Tournament. Friendly competition. Real connections. Lasting impact." loading="lazy"><span class="logo-draw" aria-hidden="true"><span class="logo-part logo-part-1"><img src="brand/tournament-logo.jpg" width="1280" height="940" alt="" loading="lazy"></span><span class="logo-part logo-part-2"><img src="brand/tournament-logo.jpg" width="1280" height="940" alt="" loading="lazy"></span><span class="logo-part logo-part-3"><img src="brand/tournament-logo.jpg" width="1280" height="940" alt="" loading="lazy"></span><span class="logo-part logo-part-4"><img src="brand/tournament-logo.jpg" width="1280" height="940" alt="" loading="lazy"></span><span class="logo-part logo-part-5"><img src="brand/tournament-logo.jpg" width="1280" height="940" alt="" loading="lazy"></span></span></div>
+      <div class="event-details"><p class="eyebrow">CORPUS CHRISTI, TEXAS <span>09.19.26</span></p><p class="hero-title">GOOD GAMES.<br><em><span class="visually-hidden">GREAT CONNECTIONS.</span>@@LETTER_CONNECTIONS@@</em></p><p class="hero-copy">The people, the rallies, and the view from above. Relive tournament day.</p><p class="venue"><span class="visually-hidden">Corpus Christi Athletic Club</span>@@LETTER_VENUE@@</p><p class="event-meta">September 19, 2026 · @@PHOTO_COUNT@@ photos · @@FILM_COUNT@@ drone films</p><div class="download-links"><a class="button button-primary" href="@@PHOTO_ZIP_URL@@" download>Download all photos <span>@@PHOTO_ZIP_SIZE@@ ZIP ↓</span></a><a class="button button-secondary" href="@@COMPLETE_ZIP_URL@@">Photos + drone films <span>@@COMPLETE_ZIP_SIZE@@ ZIP ↓</span></a></div></div>
     </section>
     <div class="event-ribbon" aria-hidden="true"><span>FRIENDLY COMPETITION.</span><i>✳</i><span>REAL CONNECTIONS.</span><i>✳</i><span>LASTING IMPACT.</span></div>
     <section id="photos" aria-labelledby="photos-heading">
@@ -39,7 +41,28 @@
       <div class="film-wall">@@FILM_CARDS@@</div><p class="film-note">The drone clips have no recorded sound. Recap music: &ldquo;Enter the Party&rdquo; by Kevin MacLeod (<a href="https://incompetech.com">incompetech.com</a>), licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>
     </section>
   </main>
-  <footer><div class="footer-identity"><img class="footer-emblem" src="brand/tournament-emblem.jpg" width="100" height="100" alt="Tournament house and pickleball paddle logo"><div><p class="footer-slogan">SEE YOU ON<br><em>THE COURT.</em></p><p>Real Estate Industry Pickleball Tournament<br>Corpus Christi Athletic Club · September 19, 2026</p></div></div><div class="footer-links"><a href="@@PHOTO_ZIP_URL@@" download>Download the photo collection ↓</a><a href="#top">Back to the top ↑</a></div></footer>
+  <footer><div class="footer-identity"><img class="footer-emblem" src="brand/tournament-emblem.jpg" width="100" height="100" alt="Tournament house and pickleball paddle logo"><div><p class="footer-slogan">SEE YOU ON<br><em><span class="visually-hidden">THE COURT.</span>@@LETTER_COURT@@</em></p><p>Real Estate Industry Pickleball Tournament<br>Corpus Christi Athletic Club · September 19, 2026</p></div></div><div class="footer-links"><a href="@@PHOTO_ZIP_URL@@" download>Download the photo collection ↓</a><a href="#top">Back to the top ↑</a></div></footer>
   <noscript><p class="noscript-note">Photo links open the original JPEG for browser zoom. Enable JavaScript for the gallery viewer.</p></noscript>
+  <script>
+  // Fades photos and films in as they scroll into view (after each image has loaded) and starts the hand-lettering.
+  (() => {
+    const root = document.documentElement;
+    if (!root.classList.contains('motion')) return;
+    if (!('IntersectionObserver' in window)) { root.classList.remove('motion'); return; }
+    const io = new IntersectionObserver(entries => {
+      let n = 0;
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target; io.unobserve(el);
+        el.style.setProperty('--stagger', (n++ % 8) * 70 + 'ms');
+        const img = el.matches('.cover, .photo-card') && el.querySelector('img');
+        const show = () => el.classList.add('in-view');
+        if (img && !img.complete) { img.addEventListener('load', show, { once: true }); img.addEventListener('error', show, { once: true }); setTimeout(show, 3000); }
+        else show();
+      }
+    }, { rootMargin: '0px 0px -6% 0px' });
+    document.querySelectorAll('.cover, .event-logo, .event-details, .photo-card, .film-card, .footer-identity').forEach(el => io.observe(el));
+  })();
+  </script>
 </body>
 </html>
