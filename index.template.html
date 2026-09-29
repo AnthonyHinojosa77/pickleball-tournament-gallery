@@ -49,19 +49,24 @@
     const root = document.documentElement;
     if (!root.classList.contains('motion')) return;
     if (!('IntersectionObserver' in window)) { root.classList.remove('motion'); return; }
-    const io = new IntersectionObserver(entries => {
+    const reveal = (entries, observer) => {
       let n = 0;
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
-        const el = entry.target; io.unobserve(el);
+        const el = entry.target; observer.unobserve(el);
         el.style.setProperty('--stagger', (n++ % 8) * 70 + 'ms');
         const img = el.matches('.cover, .photo-card') && el.querySelector('img');
         const show = () => el.classList.add('in-view');
         if (img && !img.complete) { img.addEventListener('load', show, { once: true }); img.addEventListener('error', show, { once: true }); setTimeout(show, 3000); }
         else show();
       }
-    }, { rootMargin: '0px 0px -6% 0px' });
-    document.querySelectorAll('.cover, .event-logo, .event-details, .photo-card, .film-card, .footer-identity').forEach(el => io.observe(el));
+    };
+    new IntersectionObserver(reveal).observe(document.querySelector('.cover'));
+    const io = new IntersectionObserver(reveal, { threshold: 0.3 });
+    // Everything below the cover waits for the visitor's first scroll, so it animates where it can be seen
+    // instead of playing off-screen while the cover photo is opening.
+    const start = () => document.querySelectorAll('.event-logo, .event-details, .photo-card, .film-card, .footer-identity').forEach(el => io.observe(el));
+    if (scrollY > 0) start(); else addEventListener('scroll', start, { once: true, passive: true });
   })();
   </script>
 </body>
