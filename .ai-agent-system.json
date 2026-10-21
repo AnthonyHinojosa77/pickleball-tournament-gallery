@@ -38,7 +38,7 @@
     "html-communication",
     "teardown"
   ],
-  "source_commit": "f13184123502754425f19497ba1a9560d3a26736",
+  "source_commit": "371e51ec93c88de82555e1aefcc8886e4f78108b",
   "source_repository": "https://github.com/AnthonyHinojosa77/ai-agent-system",
-  "toolkit_version": "3.3.0"
+  "toolkit_version": "3.4.0"
 }
